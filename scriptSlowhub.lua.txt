@@ -17,9 +17,9 @@ end
 -- Main Frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 700, 0, 420)
+MainFrame.Size = UDim2.new(0, 600, 0, 420)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -210)
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.BackgroundColor3 = Color3.fromRGB(244, 244, 244)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.BorderSizePixel = 0
