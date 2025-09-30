@@ -1,98 +1,115 @@
--- LocalScript đặt trong StarterGui
--- SlowHub UI Demo
-
--- Tạo ScreenGui
+--// SlowHub UI Demo
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "SlowHub"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
--- Tạo Frame chính (hub window)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 400, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.BorderSizePixel = 0
-MainFrame.Visible = true
-MainFrame.Parent = ScreenGui
-
--- Bo góc
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
-
--- Thanh trên (Title Bar)
+local Sidebar = Instance.new("Frame")
 local TitleBar = Instance.new("Frame")
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
-TitleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-TitleBar.BorderSizePixel = 0
+local TitleLabel = Instance.new("TextLabel")
+local MinimizeButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
+local ContentFrame = Instance.new("Frame")
+
+-- Parent
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+-- MainFrame
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+MainFrame.Size = UDim2.new(0, 600, 0, 350)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -175)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- Sidebar
+Sidebar.Name = "Sidebar"
+Sidebar.Parent = MainFrame
+Sidebar.BackgroundColor3 = Color3.fromRGB(245,245,245) -- trắng
+Sidebar.Size = UDim2.new(0, 150, 1, 0)
+
+-- TitleBar
+TitleBar.Name = "TitleBar"
 TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(45,45,45)
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
 
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 10)
-TitleCorner.Parent = TitleBar
+-- TitleLabel
+TitleLabel.Parent = TitleBar
+TitleLabel.Text = "SlowHub"
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextColor3 = Color3.fromRGB(255,255,255)
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.Size = UDim2.new(0, 200, 1, 0)
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
--- Tên hub
-local Title = Instance.new("TextLabel")
-Title.Text = "SlowHub"
-Title.Size = UDim2.new(1, -80, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 20
-Title.Font = Enum.Font.SourceSansBold
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = TitleBar
+-- MinimizeButton
+MinimizeButton.Parent = TitleBar
+MinimizeButton.Text = "-"
+MinimizeButton.Font = Enum.Font.SourceSansBold
+MinimizeButton.TextSize = 20
+MinimizeButton.TextColor3 = Color3.fromRGB(255,255,255)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -60, 0, 0)
 
--- Nút minimize/maximize
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Text = "-"
-ToggleButton.Size = UDim2.new(0, 40, 0, 30)
-ToggleButton.Position = UDim2.new(1, -50, 0.5, -15)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.TextSize = 20
-ToggleButton.Parent = TitleBar
+-- CloseButton
+CloseButton.Parent = TitleBar
+CloseButton.Text = "X"
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 20
+CloseButton.TextColor3 = Color3.fromRGB(255,255,255)
+CloseButton.BackgroundColor3 = Color3.fromRGB(200,50,50)
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
 
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = ToggleButton
+-- ContentFrame
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+ContentFrame.Position = UDim2.new(0, 150, 0, 30)
+ContentFrame.Size = UDim2.new(1, -150, 1, -30)
 
--- Nội dung trong frame
-local Content = Instance.new("Frame")
-Content.Size = UDim2.new(1, -20, 1, -60)
-Content.Position = UDim2.new(0, 10, 0, 50)
-Content.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-Content.BorderSizePixel = 0
-Content.Parent = MainFrame
-
-local ContentCorner = Instance.new("UICorner")
-ContentCorner.CornerRadius = UDim.new(0, 8)
-ContentCorner.Parent = Content
-
--- Label demo
-local DemoLabel = Instance.new("TextLabel")
-DemoLabel.Size = UDim2.new(1, 0, 0, 50)
-DemoLabel.Position = UDim2.new(0, 0, 0, 10)
-DemoLabel.BackgroundTransparency = 1
-DemoLabel.Text = "Menu demo - thêm chức năng sau"
-DemoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-DemoLabel.TextSize = 18
-DemoLabel.Font = Enum.Font.SourceSansItalic
-DemoLabel.Parent = Content
-
--- Biến trạng thái
+-- Minimize logic
 local minimized = false
+MinimizeButton.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    ContentFrame.Visible = not minimized
+    Sidebar.Visible = not minimized
+end)
 
--- Script toggle minimize/maximize
-ToggleButton.MouseButton1Click:Connect(function()
-	if minimized then
-		MainFrame:TweenSize(UDim2.new(0, 400, 0, 300), "Out", "Quad", 0.3, true)
-		ToggleButton.Text = "-"
-	else
-		MainFrame:TweenSize(UDim2.new(0, 400, 0, 40), "Out", "Quad", 0.3, true)
-		ToggleButton.Text = "+"
-	end
-	minimized = not minimized
+-- Close confirm
+CloseButton.MouseButton1Click:Connect(function()
+    local Confirm = Instance.new("Frame")
+    Confirm.Size = UDim2.new(0, 250, 0, 120)
+    Confirm.Position = UDim2.new(0.5, -125, 0.5, -60)
+    Confirm.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    Confirm.Parent = ScreenGui
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1, 0, 0.5, 0)
+    Label.Text = "Bạn có muốn thoát script?"
+    Label.TextColor3 = Color3.fromRGB(255,255,255)
+    Label.Font = Enum.Font.SourceSansBold
+    Label.Parent = Confirm
+
+    local Yes = Instance.new("TextButton")
+    Yes.Text = "Có"
+    Yes.Size = UDim2.new(0.5, 0, 0.5, 0)
+    Yes.Position = UDim2.new(0, 0, 0.5, 0)
+    Yes.BackgroundColor3 = Color3.fromRGB(100,200,100)
+    Yes.Parent = Confirm
+
+    local No = Instance.new("TextButton")
+    No.Text = "Không"
+    No.Size = UDim2.new(0.5, 0, 0.5, 0)
+    No.Position = UDim2.new(0.5, 0, 0.5, 0)
+    No.BackgroundColor3 = Color3.fromRGB(200,100,100)
+    No.Parent = Confirm
+
+    Yes.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    No.MouseButton1Click:Connect(function()
+        Confirm:Destroy()
+    end)
 end)
