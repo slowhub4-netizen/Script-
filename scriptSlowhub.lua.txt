@@ -1,115 +1,159 @@
---// SlowHub UI Demo
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local Sidebar = Instance.new("Frame")
-local TitleBar = Instance.new("Frame")
-local TitleLabel = Instance.new("TextLabel")
-local MinimizeButton = Instance.new("TextButton")
-local CloseButton = Instance.new("TextButton")
-local ContentFrame = Instance.new("Frame")
+--// SlowHub UI Professional Rounded
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- Parent
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Gui Container
+local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Name = "SlowHubUI"
 
--- MainFrame
-MainFrame.Name = "MainFrame"
+-- Function thêm góc bo
+local function makeRound(obj, radius)
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, radius)
+	corner.Parent = obj
+end
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-MainFrame.Size = UDim2.new(0, 600, 0, 350)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -175)
+MainFrame.Size = UDim2.new(0, 700, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -350, 0.5, -210)
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.Active = true
 MainFrame.Draggable = true
+MainFrame.BorderSizePixel = 0
+makeRound(MainFrame, 10)
+
+-- Title Bar
+local TitleBar = Instance.new("Frame", MainFrame)
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.BorderSizePixel = 0
+makeRound(TitleBar, 8)
+
+local Title = Instance.new("TextLabel", TitleBar)
+Title.Size = UDim2.new(1, -100, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "🌐 SlowHub"
+Title.TextColor3 = Color3.fromRGB(0, 0, 0)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 20
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Minimize Button
+local MinBtn = Instance.new("TextButton", TitleBar)
+MinBtn.Size = UDim2.new(0, 40, 1, 0)
+MinBtn.Position = UDim2.new(1, -80, 0, 0)
+MinBtn.Text = "-"
+MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+MinBtn.Font = Enum.Font.SourceSansBold
+MinBtn.TextSize = 20
+makeRound(MinBtn, 6)
+
+-- Close Button
+local CloseBtn = Instance.new("TextButton", TitleBar)
+CloseBtn.Size = UDim2.new(0, 40, 1, 0)
+CloseBtn.Position = UDim2.new(1, -40, 0, 0)
+CloseBtn.Text = "X"
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.TextSize = 20
+makeRound(CloseBtn, 6)
 
 -- Sidebar
-Sidebar.Name = "Sidebar"
-Sidebar.Parent = MainFrame
-Sidebar.BackgroundColor3 = Color3.fromRGB(245,245,245) -- trắng
-Sidebar.Size = UDim2.new(0, 150, 1, 0)
+local Sidebar = Instance.new("Frame", MainFrame)
+Sidebar.Size = UDim2.new(0, 170, 1, -35)
+Sidebar.Position = UDim2.new(0, 0, 0, 35)
+Sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Sidebar.BorderSizePixel = 1
+makeRound(Sidebar, 8)
 
--- TitleBar
-TitleBar.Name = "TitleBar"
-TitleBar.Parent = MainFrame
-TitleBar.BackgroundColor3 = Color3.fromRGB(45,45,45)
-TitleBar.Size = UDim2.new(1, 0, 0, 30)
+-- Example Sidebar Button
+local TabBtn = Instance.new("TextButton", Sidebar)
+TabBtn.Size = UDim2.new(1, -10, 0, 35)
+TabBtn.Position = UDim2.new(0, 5, 0, 10)
+TabBtn.Text = "Trang Chủ"
+TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+TabBtn.Font = Enum.Font.SourceSansBold
+TabBtn.TextSize = 18
+makeRound(TabBtn, 6)
 
--- TitleLabel
-TitleLabel.Parent = TitleBar
-TitleLabel.Text = "SlowHub"
-TitleLabel.Font = Enum.Font.SourceSansBold
-TitleLabel.TextColor3 = Color3.fromRGB(255,255,255)
-TitleLabel.Position = UDim2.new(0, 10, 0, 0)
-TitleLabel.Size = UDim2.new(0, 200, 1, 0)
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+-- Content Frame
+local Content = Instance.new("Frame", MainFrame)
+Content.Size = UDim2.new(1, -170, 1, -35)
+Content.Position = UDim2.new(0, 170, 0, 35)
+Content.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Content.BorderSizePixel = 1
+makeRound(Content, 8)
 
--- MinimizeButton
-MinimizeButton.Parent = TitleBar
-MinimizeButton.Text = "-"
-MinimizeButton.Font = Enum.Font.SourceSansBold
-MinimizeButton.TextSize = 20
-MinimizeButton.TextColor3 = Color3.fromRGB(255,255,255)
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -60, 0, 0)
+-- Popup Confirm
+local Confirm = Instance.new("Frame", ScreenGui)
+Confirm.Size = UDim2.new(0, 300, 0, 150)
+Confirm.Position = UDim2.new(0.5, -150, 0.5, -75)
+Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Confirm.BorderSizePixel = 1
+Confirm.Visible = false
+makeRound(Confirm, 10)
 
--- CloseButton
-CloseButton.Parent = TitleBar
-CloseButton.Text = "X"
-CloseButton.Font = Enum.Font.SourceSansBold
-CloseButton.TextSize = 20
-CloseButton.TextColor3 = Color3.fromRGB(255,255,255)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200,50,50)
-CloseButton.Size = UDim2.new(0, 30, 0, 30)
-CloseButton.Position = UDim2.new(1, -30, 0, 0)
+local ConfirmText = Instance.new("TextLabel", Confirm)
+ConfirmText.Size = UDim2.new(1, 0, 0.5, 0)
+ConfirmText.BackgroundTransparency = 1
+ConfirmText.Text = "Bạn có muốn thoát SlowHub?"
+ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)
+ConfirmText.Font = Enum.Font.SourceSansBold
+ConfirmText.TextSize = 18
 
--- ContentFrame
-ContentFrame.Parent = MainFrame
-ContentFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-ContentFrame.Position = UDim2.new(0, 150, 0, 30)
-ContentFrame.Size = UDim2.new(1, -150, 1, -30)
+local YesBtn = Instance.new("TextButton", Confirm)
+YesBtn.Size = UDim2.new(0.5, -10, 0, 40)
+YesBtn.Position = UDim2.new(0, 5, 0.65, 0)
+YesBtn.Text = "Có"
+YesBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+YesBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+YesBtn.Font = Enum.Font.SourceSansBold
+YesBtn.TextSize = 18
+makeRound(YesBtn, 8)
 
--- Minimize logic
+local NoBtn = Instance.new("TextButton", Confirm)
+NoBtn.Size = UDim2.new(0.5, -10, 0, 40)
+NoBtn.Position = UDim2.new(0.5, 5, 0.65, 0)
+NoBtn.Text = "Không"
+NoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+NoBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+NoBtn.Font = Enum.Font.SourceSansBold
+NoBtn.TextSize = 18
+makeRound(NoBtn, 8)
+
+-- Logic Minimize
 local minimized = false
-MinimizeButton.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    ContentFrame.Visible = not minimized
-    Sidebar.Visible = not minimized
+local oldSize = MainFrame.Size
+MinBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	if minimized then
+		oldSize = MainFrame.Size
+		MainFrame.Size = UDim2.new(0, 700, 0, 35)
+		Sidebar.Visible = false
+		Content.Visible = false
+	else
+		MainFrame.Size = oldSize
+		Sidebar.Visible = true
+		Content.Visible = true
+	end
 end)
 
--- Close confirm
-CloseButton.MouseButton1Click:Connect(function()
-    local Confirm = Instance.new("Frame")
-    Confirm.Size = UDim2.new(0, 250, 0, 120)
-    Confirm.Position = UDim2.new(0.5, -125, 0.5, -60)
-    Confirm.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    Confirm.Parent = ScreenGui
+-- Logic Close
+CloseBtn.MouseButton1Click:Connect(function()
+	Confirm.Visible = true
+end)
 
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, 0, 0.5, 0)
-    Label.Text = "Bạn có muốn thoát script?"
-    Label.TextColor3 = Color3.fromRGB(255,255,255)
-    Label.Font = Enum.Font.SourceSansBold
-    Label.Parent = Confirm
+YesBtn.MouseButton1Click:Connect(function()
+	ScreenGui:Destroy()
+end)
 
-    local Yes = Instance.new("TextButton")
-    Yes.Text = "Có"
-    Yes.Size = UDim2.new(0.5, 0, 0.5, 0)
-    Yes.Position = UDim2.new(0, 0, 0.5, 0)
-    Yes.BackgroundColor3 = Color3.fromRGB(100,200,100)
-    Yes.Parent = Confirm
-
-    local No = Instance.new("TextButton")
-    No.Text = "Không"
-    No.Size = UDim2.new(0.5, 0, 0.5, 0)
-    No.Position = UDim2.new(0.5, 0, 0.5, 0)
-    No.BackgroundColor3 = Color3.fromRGB(200,100,100)
-    No.Parent = Confirm
-
-    Yes.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-
-    No.MouseButton1Click:Connect(function()
-        Confirm:Destroy()
-    end)
+NoBtn.MouseButton1Click:Connect(function()
+	Confirm.Visible = false
 end)
