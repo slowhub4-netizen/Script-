@@ -1,31 +1,32 @@
---// SlowHub UI Professional Rounded
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Gui Container
+-- Khung chứa chính (ScreenGui)
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Name = "SlowHubUI"
+ScreenGui.Name = "BloxFruitsHubUI"
 
--- Function thêm góc bo
+-- Hàm thêm góc bo tròn
 local function makeRound(obj, radius)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius)
-	corner.Parent = obj
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius)
+    corner.Parent = obj
 end
 
--- Main Frame
+-- ==================================================
+-- 1. MAIN FRAME VÀ TITLE BAR
+-- ==================================================
+
 local MainFrame = Instance.new("Frame")
 MainFrame.Parent = ScreenGui
 MainFrame.Size = UDim2.new(0, 600, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -350, 0.5, -210)
+MainFrame.Position = UDim2.new(0.5, -300, 0.5, -210) -- Căn giữa màn hình
 MainFrame.BackgroundColor3 = Color3.fromRGB(244, 244, 244)
 MainFrame.Active = true
-MainFrame.Draggable = true
+MainFrame.Draggable = true -- Có thể kéo thả
 MainFrame.BorderSizePixel = 0
 makeRound(MainFrame, 10)
 
--- Title Bar
 local TitleBar = Instance.new("Frame", MainFrame)
 TitleBar.Size = UDim2.new(1, 0, 0, 35)
 TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -36,35 +37,16 @@ local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(1, -100, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🌐 SlowHub"
+Title.Text = "🌊 Blox Fruits SlowHub"
 Title.TextColor3 = Color3.fromRGB(0, 0, 0)
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 20
 Title.TextXAlignment = Enum.TextXAlignment.Left
 
--- Minimize Button
-local MinBtn = Instance.new("TextButton", TitleBar)
-MinBtn.Size = UDim2.new(0, 40, 1, 0)
-MinBtn.Position = UDim2.new(1, -80, 0, 0)
-MinBtn.Text = "-"
-MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-MinBtn.Font = Enum.Font.SourceSansBold
-MinBtn.TextSize = 20
-makeRound(MinBtn, 6)
+-- ==================================================
+-- 2. SIDEBAR VÀ CONTENT
+-- ==================================================
 
--- Close Button
-local CloseBtn = Instance.new("TextButton", TitleBar)
-CloseBtn.Size = UDim2.new(0, 40, 1, 0)
-CloseBtn.Position = UDim2.new(1, -40, 0, 0)
-CloseBtn.Text = "X"
-CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-CloseBtn.Font = Enum.Font.SourceSansBold
-CloseBtn.TextSize = 20
-makeRound(CloseBtn, 6)
-
--- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
 Sidebar.Size = UDim2.new(0, 170, 1, -35)
 Sidebar.Position = UDim2.new(0, 0, 0, 35)
@@ -72,88 +54,71 @@ Sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Sidebar.BorderSizePixel = 1
 makeRound(Sidebar, 8)
 
--- Example Sidebar Button
-local TabBtn = Instance.new("TextButton", Sidebar)
-TabBtn.Size = UDim2.new(1, -10, 0, 35)
-TabBtn.Position = UDim2.new(0, 5, 0, 10)
-TabBtn.Text = "Trang Chủ"
-TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-TabBtn.Font = Enum.Font.SourceSansBold
-TabBtn.TextSize = 18
-makeRound(TabBtn, 6)
-
--- Content Frame
 local Content = Instance.new("Frame", MainFrame)
 Content.Size = UDim2.new(1, -170, 1, -35)
 Content.Position = UDim2.new(0, 170, 0, 35)
-Content.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Content.BackgroundColor3 = Color3.fromRGB(230, 230, 230) -- Màu nền hơi xám
 Content.BorderSizePixel = 1
 makeRound(Content, 8)
 
--- Popup Confirm
-local Confirm = Instance.new("Frame", ScreenGui)
-Confirm.Size = UDim2.new(0, 300, 0, 150)
-Confirm.Position = UDim2.new(0.5, -150, 0.5, -75)
-Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Confirm.BorderSizePixel = 1
-Confirm.Visible = false
-makeRound(Confirm, 10)
+-- ==================================================
+-- 3. HÀM TẠO TAB VÀ CHUYỂN TAB
+-- ==================================================
 
-local ConfirmText = Instance.new("TextLabel", Confirm)
-ConfirmText.Size = UDim2.new(1, 0, 0.5, 0)
-ConfirmText.BackgroundTransparency = 1
-ConfirmText.Text = "Bạn có muốn thoát SlowHub?"
-ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)
-ConfirmText.Font = Enum.Font.SourceSansBold
-ConfirmText.TextSize = 18
+local TabPages = {} -- Lưu trữ các Frame nội dung (page)
+local TabIndex = 0
 
-local YesBtn = Instance.new("TextButton", Confirm)
-YesBtn.Size = UDim2.new(0.5, -10, 0, 40)
-YesBtn.Position = UDim2.new(0, 5, 0.65, 0)
-YesBtn.Text = "Có"
-YesBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-YesBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-YesBtn.Font = Enum.Font.SourceSansBold
-YesBtn.TextSize = 18
-makeRound(YesBtn, 8)
+local function SwitchTab(tabName)
+    for _, page in pairs(TabPages) do
+        page.Visible = false -- Ẩn tất cả
+    end
+    if TabPages[tabName] then
+        TabPages[tabName].Visible = true -- Hiện tab được chọn
+    end
+end
 
-local NoBtn = Instance.new("TextButton", Confirm)
-NoBtn.Size = UDim2.new(0.5, -10, 0, 40)
-NoBtn.Position = UDim2.new(0.5, 5, 0.65, 0)
-NoBtn.Text = "Không"
-NoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-NoBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-NoBtn.Font = Enum.Font.SourceSansBold
-NoBtn.TextSize = 18
-makeRound(NoBtn, 8)
+local function CreateTab(tabName)
+    TabIndex = TabIndex + 1
+    local positionY = (TabIndex - 1) * 40 + 10 -- Tăng 40 pixel cho mỗi nút
 
--- Logic Minimize
-local minimized = false
-local oldSize = MainFrame.Size
-MinBtn.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	if minimized then
-		oldSize = MainFrame.Size
-		MainFrame.Size = UDim2.new(0, 700, 0, 35)
-		Sidebar.Visible = false
-		Content.Visible = false
-	else
-		MainFrame.Size = oldSize
-		Sidebar.Visible = true
-		Content.Visible = true
-	end
-end)
+    -- 1. Tạo Frame Nội dung (Nơi chứa Controls)
+    local TabContent = Instance.new("Frame")
+    TabContent.Name = tabName .. "Page"
+    TabContent.Size = UDim2.new(1, 0, 1, 0)
+    TabContent.BackgroundTransparency = 1
+    TabContent.Parent = Content
+    TabContent.Visible = false
+    TabPages[tabName] = TabContent
 
--- Logic Close
-CloseBtn.MouseButton1Click:Connect(function()
-	Confirm.Visible = true
-end)
+    -- 2. Tạo Nút trên thanh Sidebar
+    local TabButton = Instance.new("TextButton", Sidebar)
+    TabButton.Size = UDim2.new(1, -10, 0, 35)
+    TabButton.Position = UDim2.new(0, 5, 0, positionY)
+    TabButton.Text = tabName
+    TabButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TabButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TabButton.Font = Enum.Font.SourceSansBold
+    TabButton.TextSize = 18
+    makeRound(TabButton, 6)
 
-YesBtn.MouseButton1Click:Connect(function()
-	ScreenGui:Destroy()
-end)
+    -- 3. Gắn Logic chuyển tab
+    TabButton.MouseButton1Click:Connect(function()
+        SwitchTab(tabName)
+    end)
+    
+    return TabContent -- Trả về Frame nội dung để bạn có thể thêm Controls
+end
 
-NoBtn.MouseButton1Click:Connect(function()
-	Confirm.Visible = false
-end)
+-- ==================================================
+-- 4. TẠO CÁC TAB CỦA BLOX FRUITS
+-- ==================================================
+
+local HomeTab = CreateTab("Trang Chủ")
+local CombatTab = CreateTab("Auto Farm")
+local MovementTab = CreateTab("Di Chuyển")
+local DevilFruitTab = CreateTab("Trái Ác Quỷ")
+local MiscTab = CreateTab("Khác")
+
+-- Mở tab Trang Chủ khi bắt đầu
+SwitchTab("Trang Chủ")
+)
