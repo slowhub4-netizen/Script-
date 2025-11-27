@@ -1,124 +1,269 @@
+--// SlowHub UI - Optimized for Smooth Tab Handling
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Khung chứa chính (ScreenGui)
+-- Các bảng lưu trữ để quản lý các đối tượng UI
+local Tabs = {} -- Lưu trữ các nút Tab (Sidebar Buttons)
+local ContentFrames = {} -- Lưu trữ các Khung Nội dung tương ứng
+
+-- Gui Container
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Name = "BloxFruitsHubUI"
+ScreenGui.Name = "SlowHubUI"
 
--- Hàm thêm góc bo tròn
+-- Function thêm góc bo
 local function makeRound(obj, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius)
     corner.Parent = obj
 end
 
--- ==================================================
--- 1. MAIN FRAME VÀ TITLE BAR
--- ==================================================
+-- Function Quản lý Tab (Tối ưu hóa việc chuyển đổi)
+local function switchTab(tabName)
+    -- Lặp qua tất cả các Khung Nội dung
+    for name, frame in pairs(ContentFrames) do
+        frame.Visible = (name == tabName) -- Chỉ hiện thị khung nội dung khớp với tabName
+    end
 
+    -- Lặp qua tất cả các Nút Tab để thay đổi màu sắc
+    for name, button in pairs(Tabs) do
+        -- Đặt màu nền khác biệt cho tab đang hoạt động để làm nổi bật
+        if name == tabName then
+            button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Màu làm nổi bật (màu tối hơn một chút)
+        else
+            button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Màu nền mặc định
+        end
+    end
+end
+
+-- Main Frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Parent = ScreenGui
-MainFrame.Size = UDim2.new(0, 600, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -210) -- Căn giữa màn hình
+MainFrame.Size = UDim2.new(0, 700, 0, 480) -- Kích thước lớn hơn một chút
+MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(244, 244, 244)
 MainFrame.Active = true
-MainFrame.Draggable = true -- Có thể kéo thả
+MainFrame.Draggable = true
 MainFrame.BorderSizePixel = 0
-makeRound(MainFrame, 10)
+makeRound(MainFrame, 12) -- Góc bo lớn hơn
 
+-- Title Bar
 local TitleBar = Instance.new("Frame", MainFrame)
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.Size = UDim2.new(1, 0, 0, 40) -- Thanh tiêu đề lớn hơn
 TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 TitleBar.BorderSizePixel = 0
-makeRound(TitleBar, 8)
+makeRound(TitleBar, 10)
 
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(1, -100, 1, 0)
-Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Position = UDim2.new(0, 20, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "🌊 Blox Fruits SlowHub"
+Title.Text = "⚔️ Blox Fruits SlowHub Pro"
 Title.TextColor3 = Color3.fromRGB(0, 0, 0)
 Title.Font = Enum.Font.SourceSansBold
-Title.TextSize = 20
+Title.TextSize = 22
 Title.TextXAlignment = Enum.TextXAlignment.Left
 
--- ==================================================
--- 2. SIDEBAR VÀ CONTENT
--- ==================================================
+-- Minimize Button
+local MinBtn = Instance.new("TextButton", TitleBar)
+MinBtn.Size = UDim2.new(0, 45, 1, -10)
+MinBtn.Position = UDim2.new(1, -95, 0, 5)
+MinBtn.Text = "–" -- Ký tự thu nhỏ rõ hơn
+MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+MinBtn.Font = Enum.Font.SourceSansBold
+MinBtn.TextSize = 24
+makeRound(MinBtn, 8)
 
+-- Close Button
+local CloseBtn = Instance.new("TextButton", TitleBar)
+CloseBtn.Size = UDim2.new(0, 45, 1, -10)
+CloseBtn.Position = UDim2.new(1, -50, 0, 5)
+CloseBtn.Text = "X"
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextColor3 = Color3.fromRGB(255, 0, 0) -- Màu đỏ cho nút đóng
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.TextSize = 24
+makeRound(CloseBtn, 8)
+
+-- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
-Sidebar.Size = UDim2.new(0, 170, 1, -35)
-Sidebar.Position = UDim2.new(0, 0, 0, 35)
+Sidebar.Size = UDim2.new(0, 180, 1, -40)
+Sidebar.Position = UDim2.new(0, 0, 0, 40)
 Sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Sidebar.BorderSizePixel = 1
-makeRound(Sidebar, 8)
+Sidebar.BorderSizePixel = 0
+makeRound(Sidebar, 10)
 
-local Content = Instance.new("Frame", MainFrame)
-Content.Size = UDim2.new(1, -170, 1, -35)
-Content.Position = UDim2.new(0, 170, 0, 35)
-Content.BackgroundColor3 = Color3.fromRGB(230, 230, 230) -- Màu nền hơi xám
-Content.BorderSizePixel = 1
-makeRound(Content, 8)
+-- Content Area (Khung chứa tất cả các tab nội dung)
+local ContentArea = Instance.new("Frame", MainFrame)
+ContentArea.Size = UDim2.new(1, -180, 1, -40)
+ContentArea.Position = UDim2.new(0, 180, 0, 40)
+ContentArea.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ContentArea.BorderSizePixel = 0
+makeRound(ContentArea, 10)
 
--- ==================================================
--- 3. HÀM TẠO TAB VÀ CHUYỂN TAB
--- ==================================================
+-- Function tạo Nút Tab (Sidebar)
+local function createTabButton(tabName, yOffset)
+    local TabBtn = Instance.new("TextButton", Sidebar)
+    TabBtn.Name = tabName
+    TabBtn.Size = UDim2.new(1, -20, 0, 40)
+    TabBtn.Position = UDim2.new(0, 10, 0, yOffset)
+    TabBtn.Text = tabName
+    TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TabBtn.Font = Enum.Font.SourceSansBold
+    TabBtn.TextSize = 18
+    makeRound(TabBtn, 8)
 
-local TabPages = {} -- Lưu trữ các Frame nội dung (page)
-local TabIndex = 0
-
-local function SwitchTab(tabName)
-    for _, page in pairs(TabPages) do
-        page.Visible = false -- Ẩn tất cả
-    end
-    if TabPages[tabName] then
-        TabPages[tabName].Visible = true -- Hiện tab được chọn
-    end
-end
-
-local function CreateTab(tabName)
-    TabIndex = TabIndex + 1
-    local positionY = (TabIndex - 1) * 40 + 10 -- Tăng 40 pixel cho mỗi nút
-
-    -- 1. Tạo Frame Nội dung (Nơi chứa Controls)
-    local TabContent = Instance.new("Frame")
-    TabContent.Name = tabName .. "Page"
-    TabContent.Size = UDim2.new(1, 0, 1, 0)
-    TabContent.BackgroundTransparency = 1
-    TabContent.Parent = Content
-    TabContent.Visible = false
-    TabPages[tabName] = TabContent
-
-    -- 2. Tạo Nút trên thanh Sidebar
-    local TabButton = Instance.new("TextButton", Sidebar)
-    TabButton.Size = UDim2.new(1, -10, 0, 35)
-    TabButton.Position = UDim2.new(0, 5, 0, positionY)
-    TabButton.Text = tabName
-    TabButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TabButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    TabButton.Font = Enum.Font.SourceSansBold
-    TabButton.TextSize = 18
-    makeRound(TabButton, 6)
-
-    -- 3. Gắn Logic chuyển tab
-    TabButton.MouseButton1Click:Connect(function()
-        SwitchTab(tabName)
+    -- Logic chuyển tab khi click
+    TabBtn.MouseButton1Click:Connect(function()
+        switchTab(tabName)
     end)
     
-    return TabContent -- Trả về Frame nội dung để bạn có thể thêm Controls
+    Tabs[tabName] = TabBtn
+    return TabBtn
 end
 
--- ==================================================
--- 4. TẠO CÁC TAB CỦA BLOX FRUITS
--- ==================================================
+-- Function tạo Khung Nội dung Tab
+local function createContentFrame(tabName)
+    local ContentFrame = Instance.new("Frame", ContentArea)
+    ContentFrame.Name = tabName .. "Content"
+    ContentFrame.Size = UDim2.new(1, 0, 1, 0)
+    ContentFrame.BackgroundTransparency = 1 -- Làm trong suốt để chỉ hiện nội dung bên trong
+    ContentFrame.Visible = false
+    
+    ContentFrames[tabName] = ContentFrame
+    return ContentFrame
+end
 
-local HomeTab = CreateTab("Trang Chủ")
-local CombatTab = CreateTab("Auto Farm")
-local MovementTab = CreateTab("Di Chuyển")
-local DevilFruitTab = CreateTab("Trái Ác Quỷ")
-local MiscTab = CreateTab("Khác")
+----------------------------------------------------
+--          Tạo Tab và Nội dung Tab
+----------------------------------------------------
 
--- Mở tab Trang Chủ khi bắt đầu
-SwitchTab("Trang Chủ")
-)
+-- 1. Tab Trang Chủ (Home)
+local HomeBtn = createTabButton("Trang Chủ", 10)
+local HomeContent = createContentFrame("Trang Chủ")
+
+local HomeLabel = Instance.new("TextLabel", HomeContent)
+HomeLabel.Size = UDim2.new(1, 0, 0, 30)
+HomeLabel.Position = UDim2.new(0, 0, 0, 10)
+HomeLabel.Text = "Chào mừng đến với Blox Fruits Hub!"
+HomeLabel.BackgroundTransparency = 1
+HomeLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+HomeLabel.Font = Enum.Font.SourceSans
+HomeLabel.TextSize = 20
+
+-- 2. Tab FARMING (Chức năng chính của bạn)
+local FarmingBtn = createTabButton("FARMING", 60) -- Offset 60 (10 + 40 nút + 10 khoảng cách)
+local FarmingContent = createContentFrame("FARMING")
+
+-- Nội dung Tab FARMING
+local FarmingLabel = Instance.new("TextLabel", FarmingContent)
+FarmingLabel.Size = UDim2.new(1, 0, 0, 30)
+FarmingLabel.Position = UDim2.new(0, 0, 0, 10)
+FarmingLabel.Text = "⚙️ Các Tùy chọn Farming cho Blox Fruits"
+FarmingLabel.BackgroundTransparency = 1
+FarmingLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+FarmingLabel.Font = Enum.Font.SourceSansBold
+FarmingLabel.TextSize = 24
+
+-- Ví dụ: Nút Toggle Auto Farm Level
+local AutoFarmToggle = Instance.new("TextButton", FarmingContent)
+AutoFarmToggle.Size = UDim2.new(0, 200, 0, 40)
+AutoFarmToggle.Position = UDim2.new(0, 20, 0, 60)
+AutoFarmToggle.Text = "⚫ Auto Farm Level (TẮT)"
+AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
+AutoFarmToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
+AutoFarmToggle.Font = Enum.Font.SourceSans
+AutoFarmToggle.TextSize = 18
+makeRound(AutoFarmToggle, 8)
+
+-- Logic Toggle Mẫu
+local isFarming = false
+AutoFarmToggle.MouseButton1Click:Connect(function()
+    isFarming = not isFarming
+    if isFarming then
+        AutoFarmToggle.Text = "🟢 Auto Farm Level (BẬT)"
+        AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(144, 238, 144) -- Màu xanh lá
+        -- Thêm code kích hoạt Auto Farm ở đây
+    else
+        AutoFarmToggle.Text = "⚫ Auto Farm Level (TẮT)"
+        AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220) -- Màu xám
+        -- Thêm code dừng Auto Farm ở đây
+    end
+end)
+
+
+----------------------------------------------------
+--             Logic Chức năng Cơ bản
+----------------------------------------------------
+
+-- Popup Confirm (Không thay đổi)
+local Confirm = Instance.new("Frame", ScreenGui)
+Confirm.Size = UDim2.new(0, 300, 0, 150)
+Confirm.Position = UDim2.new(0.5, -150, 0.5, -75)
+Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Confirm.BorderSizePixel = 1
+Confirm.Visible = false
+makeRound(Confirm, 10)
+
+local ConfirmText = Instance.new("TextLabel", Confirm)
+ConfirmText.Size = UDim2.new(1, 0, 0.5, 0)
+ConfirmText.BackgroundTransparency = 1
+ConfirmText.Text = "Bạn có muốn thoát Blox Fruits Hub?"
+ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)
+ConfirmText.Font = Enum.Font.SourceSansBold
+ConfirmText.TextSize = 18
+
+local YesBtn = Instance.new("TextButton", Confirm)
+YesBtn.Size = UDim2.new(0.5, -10, 0, 40)
+YesBtn.Position = UDim2.new(0, 5, 0.65, 0)
+YesBtn.Text = "Có"
+YesBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+YesBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+YesBtn.Font = Enum.Font.SourceSansBold
+YesBtn.TextSize = 18
+makeRound(YesBtn, 8)
+
+local NoBtn = Instance.new("TextButton", Confirm)
+NoBtn.Size = UDim2.new(0.5, -10, 0, 40)
+NoBtn.Position = UDim2.new(0.5, 5, 0.65, 0)
+NoBtn.Text = "Không"
+NoBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+NoBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+NoBtn.Font = Enum.Font.SourceSansBold
+NoBtn.TextSize = 18
+makeRound(NoBtn, 8)
+
+-- Logic Minimize
+local minimized = false
+local oldSize = MainFrame.Size
+MinBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        oldSize = MainFrame.Size
+        MainFrame.Size = UDim2.new(0, 700, 0, 40) -- Kích thước thu nhỏ mới
+        Sidebar.Visible = false
+        ContentArea.Visible = false
+    else
+        MainFrame.Size = oldSize
+        Sidebar.Visible = true
+        ContentArea.Visible = true
+    end
+end)
+
+-- Logic Close/Confirm
+CloseBtn.MouseButton1Click:Connect(function()
+    Confirm.Visible = true
+end)
+
+YesBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+NoBtn.MouseButton1Click:Connect(function()
+    Confirm.Visible = false
+end)
+
+-- Hiển thị Tab mặc định khi script chạy (Làm cho nó mượt mà hơn)
+switchTab("FARMING")
