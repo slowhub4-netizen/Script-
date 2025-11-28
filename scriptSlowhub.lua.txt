@@ -12,6 +12,7 @@ local ContentFrames = {} -- Lưu trữ các Khung Nội dung tương ứng
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Name = "SlowHubUI"
+ScreenGui.Enabled = true -- 🛠️ Đã Sửa: Đảm bảo GUI được bật
 
 -- Function thêm góc bo
 local function makeRound(obj, radius)
@@ -20,19 +21,19 @@ local function makeRound(obj, radius)
     corner.Parent = obj
 end
 
--- Function Quản lý Tab (Tối ưu hóa việc chuyển đổi)
+-[span_0](start_span)- Function Quản lý Tab (Tối ưu hóa việc chuyển đổi)[span_0](end_span)
 local function switchTab(tabName)
     -- Lặp qua tất cả các Khung Nội dung
     for name, frame in pairs(ContentFrames) do
-        [span_0](start_span)frame.Visible = (name == tabName) -- Chỉ hiện thị khung nội dung khớp với tabName[span_0](end_span)
+        [span_1](start_span)frame.Visible = (name == tabName) -- Chỉ hiện thị khung nội dung khớp với tabName[span_1](end_span)
     end
 
     -- Lặp qua tất cả các Nút Tab để thay đổi màu sắc
     for name, button in pairs(Tabs) do
-        [span_1](start_span)if name == tabName then --[span_1](end_span)
-            [span_2](start_span)button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Màu làm nổi bật[span_2](end_span)
+        [span_2](start_span)if name == tabName then[span_2](end_span)
+            [span_3](start_span)button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Màu làm nổi bật[span_3](end_span)
         else
-            [span_3](start_span)button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Màu nền mặc định[span_3](end_span)
+            [span_4](start_span)button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Màu nền mặc định[span_4](end_span)
         end
     end
 end
@@ -43,7 +44,7 @@ MainFrame.Parent = ScreenGui
 MainFrame.Size = UDim2.new(0, 700, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(244, 244, 244)
-[span_4](start_span)MainFrame.Active = true --[span_4](end_span)
+[span_5](start_span)MainFrame.Active = true[span_5](end_span)
 MainFrame.Draggable = true
 MainFrame.BorderSizePixel = 0
 makeRound(MainFrame, 12)
@@ -51,9 +52,9 @@ makeRound(MainFrame, 12)
 -- Title Bar
 local TitleBar = Instance.new("Frame", MainFrame)
 TitleBar.Size = UDim2.new(1, 0, 0, 40)
-TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+[span_6](start_span)TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)[span_6](end_span)
 TitleBar.BorderSizePixel = 0
-makeRound(TitleBar, 10)
+--makeRound(TitleBar, 10) -- 🛠️ Đã Sửa: Bỏ bo góc để tránh lỗi hiển thị
 
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(1, -100, 1, 0)
@@ -72,7 +73,7 @@ MinBtn.Position = UDim2.new(1, -95, 0, 5)
 MinBtn.Text = "–"
 MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-[span_5](start_span)MinBtn.Font = Enum.Font.SourceSansBold --[span_5](end_span)
+[span_7](start_span)MinBtn.Font = Enum.Font.SourceSansBold[span_7](end_span)
 MinBtn.TextSize = 24
 makeRound(MinBtn, 8)
 
@@ -85,7 +86,7 @@ CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CloseBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
 CloseBtn.Font = Enum.Font.SourceSansBold
 CloseBtn.TextSize = 24
-makeRound(CloseBtn, 8)
+[span_8](start_span)makeRound(CloseBtn, 8)[span_8](end_span)
 
 -- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
@@ -104,14 +105,14 @@ ContentArea.BorderSizePixel = 0
 makeRound(ContentArea, 10)
 
 -- Function tạo Nút Tab
-[span_6](start_span)local function createTabButton(tabName, yOffset) --[span_6](end_span)
+[span_9](start_span)local function createTabButton(tabName, yOffset)[span_9](end_span)
     local TabBtn = Instance.new("TextButton", Sidebar)
     TabBtn.Name = tabName
     TabBtn.Size = UDim2.new(1, -20, 0, 40)
     TabBtn.Position = UDim2.new(0, 10, 0, yOffset)
     TabBtn.Text = tabName
     TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    [span_10](start_span)TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)[span_10](end_span)
     TabBtn.Font = Enum.Font.SourceSansBold
     TabBtn.TextSize = 18
     makeRound(TabBtn, 8)
@@ -120,7 +121,7 @@ makeRound(ContentArea, 10)
         switchTab(tabName)
     end)
   
-    [span_7](start_span)Tabs[tabName] = TabBtn --[span_7](end_span)
+    [span_11](start_span)Tabs[tabName] = TabBtn[span_11](end_span)
     return TabBtn
 end
 
@@ -131,8 +132,8 @@ local function createContentFrame(tabName)
     ContentFrame.Size = UDim2.new(1, 0, 1, 0)
     ContentFrame.BackgroundTransparency = 1
     ContentFrame.Visible = false
-    
-    ContentFrames[tabName] = ContentFrame
+ 
+    [span_12](start_span)ContentFrames[tabName] = ContentFrame[span_12](end_span)
     return ContentFrame
 end
 
@@ -141,14 +142,14 @@ end
 ----------------------------------------------------
 
 -- 1. Tab Trang Chủ
-[span_8](start_span)local HomeBtn = createTabButton("Trang Chủ", 10) --[span_8](end_span)
+[span_13](start_span)local HomeBtn = createTabButton("Trang Chủ", 10)[span_13](end_span)
 local HomeContent = createContentFrame("Trang Chủ")
 
 local HomeLabel = Instance.new("TextLabel", HomeContent)
 HomeLabel.Size = UDim2.new(1, 0, 0, 30)
 HomeLabel.Position = UDim2.new(0, 0, 0, 10)
 HomeLabel.Text = "Chào mừng đến với Blox Fruits Hub!"
-[span_9](start_span)HomeLabel.BackgroundTransparency = 1 --[span_9](end_span)
+[span_14](start_span)HomeLabel.BackgroundTransparency = 1[span_14](end_span)
 HomeLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 HomeLabel.Font = Enum.Font.SourceSans
 HomeLabel.TextSize = 20
@@ -169,7 +170,7 @@ FarmingLabel.TextSize = 24
 local AutoFarmToggle = Instance.new("TextButton", FarmingContent)
 AutoFarmToggle.Size = UDim2.new(0, 200, 0, 40)
 AutoFarmToggle.Position = UDim2.new(0, 20, 0, 60)
-[span_10](start_span)AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)" --[span_10](end_span)
+[span_15](start_span)AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)"[span_15](end_span)
 AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
 AutoFarmToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 AutoFarmToggle.Font = Enum.Font.SourceSans
@@ -179,7 +180,7 @@ makeRound(AutoFarmToggle, 8)
 
 -- ====================================================
 --       CODE ĐÃ SỬA: Logic Auto Farm Bandit
--- ====================================================
+-[span_16](start_span)- ====================================================[span_16](end_span)
 
 local function farmLevelTask()
     -- 1. Tìm quái vật "Bandit" trong thư mục Enemies hoặc Workspace
@@ -190,7 +191,8 @@ local function farmLevelTask()
         
         -- 3. Teleport ra sau lưng quái (khoảng cách 5 đơn vị)
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and target:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+       
+        [span_17](start_span)LocalPlayer.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)[span_17](end_span)
         end
 
         -- 4. Tự động đánh (Giả lập click chuột trái)
@@ -199,7 +201,8 @@ local function farmLevelTask()
         VirtualUser:ClickButton1(Vector2.new(851, 158), workspace.CurrentCamera.CFrame)
         
         -- Debug: In ra để biết đang đánh
-        -- print("Đang đánh Bandit...") 
+        
+    -[span_18](start_span)- print("Đang đánh Bandit...")[span_18](end_span)
     end
     
     -- Chờ rất ngắn để đánh liên tục
@@ -217,18 +220,19 @@ AutoFarmToggle.MouseButton1Click:Connect(function()
         AutoFarmToggle.Text = "🟢 Auto Farm Bandit (BẬT)"
         AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(144, 238, 144) -- Xanh lá
         
-        -- CHẠY LOGIC FARM
-        [span_11](start_span)farmThread = coroutine.wrap(function() --[span_11](end_span)
+        -[span_19](start_span)- CHẠY LOGIC FARM[span_19](end_span)
+        [span_20](start_span)farmThread = coroutine.wrap(function()[span_20](end_span)
             while isFarming do
                 pcall(farmLevelTask) 
                 RunService.Heartbeat:Wait() -- Tối ưu hóa vòng lặp
             end
             farmThread = nil 
-        end)()
+       
+        [span_21](start_span)end)()[span_21](end_span)
         
     else
         AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)"
-        [span_12](start_span)AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220) -- Xám[span_12](end_span)
+        [span_22](start_span)AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220) -- Xám[span_22](end_span)
         -- Khi isFarming = false, vòng lặp while tự dừng
     end
 end)
@@ -243,14 +247,14 @@ local Confirm = Instance.new("Frame", ScreenGui)
 Confirm.Size = UDim2.new(0, 300, 0, 150)
 Confirm.Position = UDim2.new(0.5, -150, 0.5, -75)
 Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Confirm.BorderSizePixel = 1
+[span_23](start_span)Confirm.BorderSizePixel = 1[span_23](end_span)
 Confirm.Visible = false
 makeRound(Confirm, 10)
 
 local ConfirmText = Instance.new("TextLabel", Confirm)
 ConfirmText.Size = UDim2.new(1, 0, 0.5, 0)
 ConfirmText.BackgroundTransparency = 1
-ConfirmText.Text = "Bạn có muốn thoát Blox Fruits Hub?" -[span_13](start_span)-[span_13](end_span)
+ConfirmText.Text = "Bạn có muốn thoát Blox Fruits Hub?"
 ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)
 ConfirmText.Font = Enum.Font.SourceSansBold
 ConfirmText.TextSize = 18
@@ -282,7 +286,8 @@ MinBtn.MouseButton1Click:Connect(function()
     minimized = not minimized
     if minimized then
         oldSize = MainFrame.Size
-        [span_14](start_span)MainFrame.Size = UDim2.new(0, 700, 0, 40) -- Kích thước thu nhỏ[span_14](end_span)
+   
+        [span_24](start_span)MainFrame.Size = UDim2.new(0, 700, 0, 40) -- Kích thước thu nhỏ[span_24](end_span)
         Sidebar.Visible = false
         ContentArea.Visible = false
     else
@@ -306,4 +311,4 @@ NoBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Hiển thị Tab mặc định
-[span_15](start_span)switchTab("FARMING") --[span_15](end_span)
+[span_25](start_span)switchTab("FARMING")[span_25](end_span)
