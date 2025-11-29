@@ -1,0 +1,104 @@
+loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V2/refs/heads/main/UiREDzV2.lua")))()
+
+       local Window = MakeWindow({
+         Hub = {
+         Title = "TNT Roblox",
+         Animation = "By: TNT Roblox"
+         },
+        Key = {
+        KeySystem = false,
+        Title = "Key System",
+        Description = "",
+        KeyLink = "",
+        Keys = {"1234"},
+        Notifi = {
+        Notifications = true,
+        CorrectKey = "Running the Script...",
+       Incorrectkey = "The key is incorrect",
+       CopyKeyLink = "Copied to Clipboard"
+      }
+    }
+  })
+
+       MinimizeButton({
+       Image = "http://www.roblox.com/asset/?id=83190276951914",
+       Size = {60, 60},
+       Color = Color3.fromRGB(10, 10, 10),
+       Corner = true,
+       Stroke = false,
+       StrokeColor = Color3.fromRGB(255, 0, 0)
+      })
+      
+--// SlowHub Demo UI
+local Tab1 = MakeTab({Name = "main fram"})
+local Tab2 = MakeTab({Name = "combat"})
+local Tab3 = MakeTab({Name = "defense"})
+local Tab4 = MakeTab({Name = "tộc v4"})
+local Tab5 = MakeTab({Name = "sự kiện"})
+local Tab6 = MakeTab({Name = "fishing"})
+local Tab7 = MakeTab({Name = "teleport"})
+local Tab8 = MakeTab({Name = "player"})
+local Tab9 = MakeTab({Name = "devil fruit"})
+local Tab10 = MakeTab({Name = "custom"})
+local Tab11 = MakeTab({Name = "esp"})
+local Tab12 = MakeTab({Name = "gamepass"})
+local Tab13 = MakeTab({Name = "sea features"})
+local Tab14 = MakeTab({Name = "Qliti of life"})
+local Tab15 = MakeTab({Name = "troll"})
+local Tab16 = MakeTab({Name = "dev tool"})
+local Tab17 = MakeTab({Name = "misc"})
+local Tab18 = MakeTab({Name = "settings"})
+-- Tab1 = main fram
+local AutoFarm = false
+
+-- Auto Farm Toggle
+AddToggle(Tab1, {
+    Name = "Auto Farm (All Levels)",
+    Default = false,
+    Callback = function(Value)
+        AutoFarm = Value
+        if AutoFarm then
+            task.spawn(function()
+                while AutoFarm do
+                    pcall(function()
+                        local player = game.Players.LocalPlayer
+                        local character = player.Character
+                        local hrp = character and character:FindFirstChild("HumanoidRootPart")
+                        local level = player.Data.Level.Value
+                        
+                        if not hrp then return end
+
+                        -- Tìm NPC nhiệm vụ đúng với level
+                        for _, questNPC in pairs(workspace.NPCs:GetChildren()) do
+                            if questNPC:FindFirstChild("LevelReq") 
+                               and level >= questNPC.LevelReq.Value 
+                               and level <= questNPC.MaxLevel.Value then
+                                -- Tele tới NPC nhận nhiệm vụ
+                                hrp.CFrame = questNPC.HumanoidRootPart.CFrame * CFrame.new(0,0,5)
+                                fireproximityprompt(questNPC.ProximityPrompt) -- Nhận nhiệm vụ
+
+                                -- Tìm quái của nhiệm vụ
+                                for _, mob in pairs(workspace.Enemies:GetChildren()) do
+                                    if mob:FindFirstChild("HumanoidRootPart") 
+                                       and mob.Name == questNPC.TargetMob.Value then
+                                        local mobHRP = mob.HumanoidRootPart
+                                        -- Tele cách quái 10 studs rồi tiến tới
+                                        hrp.CFrame = mobHRP.CFrame * CFrame.new(0,0,10)
+                                        hrp.CFrame = hrp.CFrame:Lerp(mobHRP.CFrame * CFrame.new(0,0,3), 0.2)
+                                        
+                                        -- Tấn công
+                                        if mob:FindFirstChild("Humanoid") then
+                                            mob.Humanoid.Health = 0
+                                        end
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                    task.wait(0.3)
+                end
+            end)
+        end
+    end
+})
