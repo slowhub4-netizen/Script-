@@ -50,10 +50,11 @@ local Tab17 = MakeTab({Name = "misc"})
 local Tab18 = MakeTab({Name = "settings"})
 -- Tab1 = main fram
 -- ====================================================
---        SPECIFIC BANDIT FARM TOGGLE
+--        SPECIFIC BANDIT FARM TOGGLE (WITH QUEST ACCEPTANCE)
 -- ====================================================
 
 local BanditFarm = false
+local QuestNPCName = "Quest Giver" -- Tên thường gặp của NPC đưa nhiệm vụ Bandit
 
 local function BanditFarmTask()
     local player = game.Players.LocalPlayer
@@ -62,17 +63,28 @@ local function BanditFarmTask()
     
     if not hrp then return end
 
-    -- 1. Find the target mob: Bandit (Checks in Enemies and Workspace)
+    -- 1. Find the Quest Giver NPC
+    local questNPC = workspace.NPCs:FindFirstChild(QuestNPCName)
+    
+    -- Fire the prompt to accept/turn in the quest (Spamming this ensures the quest is active)
+    if questNPC and questNPC:FindFirstChild("ProximityPrompt") then
+        pcall(function()
+            -- Note: 'fireproximityprompt' is the common exploit function
+            fireproximityprompt(questNPC.ProximityPrompt) 
+        end)
+    end
+
+    -- 2. Find the target mob: Bandit
     local target = workspace.Enemies:FindFirstChild("Bandit") or workspace:FindFirstChild("Bandit")
 
-    -- 2. Check if Bandit exists and has health
+    -- 3. Kill the Bandit
     if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
         local targetHRP = target:FindFirstChild("HumanoidRootPart")
         if targetHRP then
-            -- Teleport 5 studs away from the target (for instant kill position)
+            -- Teleport 5 studs away from the target
             hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 5)
             
-            -- Instant Kill (Most reliable method)
+            -- Instant Kill
             target.Humanoid.Health = 0
         end
     end
@@ -81,7 +93,7 @@ end
 
 -- Add the new Toggle to Tab1 (main fram)
 AddToggle(Tab1, {
-    Name = "Auto Farm Bandit (Simple)", -- Tên toggle mới
+    Name = "Auto Farm Bandit (With Quest)", -- Cập nhật tên
     Default = false,
     Callback = function(Value)
         BanditFarm = Value
@@ -89,7 +101,7 @@ AddToggle(Tab1, {
             task.spawn(function()
                 while BanditFarm do
                     pcall(BanditFarmTask)
-                    task.wait(0.05) -- Tối ưu hóa vòng lặp
+                    task.wait(0.05)
                 end
             end)
         end
