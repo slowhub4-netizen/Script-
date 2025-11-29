@@ -49,54 +49,47 @@ local Tab16 = MakeTab({Name = "dev tool"})
 local Tab17 = MakeTab({Name = "misc"})
 local Tab18 = MakeTab({Name = "settings"})
 -- Tab1 = main fram
-local AutoFarm = false
+-- ====================================================
+--        SPECIFIC BANDIT FARM TOGGLE
+-- ====================================================
 
--- Auto Farm Toggle
+local BanditFarm = false
+
+local function BanditFarmTask()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+    
+    if not hrp then return end
+
+    -- 1. Find the target mob: Bandit (Checks in Enemies and Workspace)
+    local target = workspace.Enemies:FindFirstChild("Bandit") or workspace:FindFirstChild("Bandit")
+
+    -- 2. Check if Bandit exists and has health
+    if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
+        local targetHRP = target:FindFirstChild("HumanoidRootPart")
+        if targetHRP then
+            -- Teleport 5 studs away from the target (for instant kill position)
+            hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 5)
+            
+            -- Instant Kill (Most reliable method)
+            target.Humanoid.Health = 0
+        end
+    end
+    task.wait(0.1) -- Short wait for quick farming
+end
+
+-- Add the new Toggle to Tab1 (main fram)
 AddToggle(Tab1, {
-    Name = "Auto Farm (All Levels)",
+    Name = "Auto Farm Bandit (Simple)", -- Tên toggle mới
     Default = false,
     Callback = function(Value)
-        AutoFarm = Value
-        if AutoFarm then
+        BanditFarm = Value
+        if BanditFarm then
             task.spawn(function()
-                while AutoFarm do
-                    pcall(function()
-                        local player = game.Players.LocalPlayer
-                        local character = player.Character
-                        local hrp = character and character:FindFirstChild("HumanoidRootPart")
-                        local level = player.Data.Level.Value
-                        
-                        if not hrp then return end
-
-                        -- Tìm NPC nhiệm vụ đúng với level
-                        for _, questNPC in pairs(workspace.NPCs:GetChildren()) do
-                            if questNPC:FindFirstChild("LevelReq") 
-                               and level >= questNPC.LevelReq.Value 
-                               and level <= questNPC.MaxLevel.Value then
-                                -- Tele tới NPC nhận nhiệm vụ
-                                hrp.CFrame = questNPC.HumanoidRootPart.CFrame * CFrame.new(0,0,5)
-                                fireproximityprompt(questNPC.ProximityPrompt) -- Nhận nhiệm vụ
-
-                                -- Tìm quái của nhiệm vụ
-                                for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                                    if mob:FindFirstChild("HumanoidRootPart") 
-                                       and mob.Name == questNPC.TargetMob.Value then
-                                        local mobHRP = mob.HumanoidRootPart
-                                        -- Tele cách quái 10 studs rồi tiến tới
-                                        hrp.CFrame = mobHRP.CFrame * CFrame.new(0,0,10)
-                                        hrp.CFrame = hrp.CFrame:Lerp(mobHRP.CFrame * CFrame.new(0,0,3), 0.2)
-                                        
-                                        -- Tấn công
-                                        if mob:FindFirstChild("Humanoid") then
-                                            mob.Humanoid.Health = 0
-                                        end
-                                        break
-                                    end
-                                end
-                            end
-                        end
-                    end)
-                    task.wait(0.3)
+                while BanditFarm do
+                    pcall(BanditFarmTask)
+                    task.wait(0.05) -- Tối ưu hóa vòng lặp
                 end
             end)
         end
