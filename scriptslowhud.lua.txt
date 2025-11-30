@@ -1,6 +1,6 @@
 --[[
     ================================================================================
-    BLOX FRUITS GUI FRAMEWORK (STRUCTURE-ONLY V3.0)
+    BLOX FRUITS GUI FRAMEWORK (STRUCTURE-ONLY V3.0) - ĐÃ SỬA LỖI KÍCH THƯỚC
     MỤC ĐÍCH: Khung GUI cơ bản cho Blox Fruits, tập trung vào cấu trúc.
     TÁC GIẢ: Đối tác lập trình (AI Gemini)
     ĐỘ DÀI: Đảm bảo trên 1000 dòng (Structure and Comments)
@@ -21,7 +21,11 @@ local HttpService = game:GetService("HttpService")
 
 -- HẰNG SỐ CẤU HÌNH (THIẾT KẾ PHẲNG, MÀU XANH LỤC LAM)
 local Configs = {
-    -- Kích thước tổng thể
+    -- Kích thước tổng thể (ĐÃ SỬA: Thêm SCALE để tự động điều chỉnh)
+    GUI_WIDTH_SCALE = 0.65,         -- Chiếm 65% chiều rộng màn hình (MỚI)
+    GUI_HEIGHT_SCALE = 0.75,        -- Chiếm 75% chiều cao màn hình (MỚI)
+    
+    -- Kích thước gốc Offset (Giữ lại cho các tính toán nội bộ)
     GUI_WIDTH = 800,
     GUI_HEIGHT = 550,
     
@@ -108,8 +112,11 @@ function MakeHub(title)
 
     -- Khung Chính (Main Frame) - Có thể kéo thả
     local MainFrame = Create("Frame", ScreenGui, {
-        Size = UDim2.new(0, Configs.GUI_WIDTH, 0, Configs.GUI_HEIGHT),
-        Position = UDim2.new(0.5, -Configs.GUI_WIDTH / 2, 0.5, -Configs.GUI_HEIGHT / 2),
+        -- *** ĐÃ SỬA: Dùng Scale và AnchorPoint để khung căn giữa và co giãn. ***
+        Size = UDim2.new(Configs.GUI_WIDTH_SCALE, 0, Configs.GUI_HEIGHT_SCALE, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5), -- Cần thiết để căn giữa chính xác
+        
         BackgroundColor3 = Configs.BG_COLOR,
         Active = true,          -- Cần thiết cho Draggable
         Draggable = true,       -- Cho phép người dùng kéo khung
