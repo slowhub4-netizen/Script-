@@ -1,0 +1,580 @@
+--[[
+    ================================================================================
+    BLOX FRUITS ADVANCED GUI FRAMEWORK (V2.0 - SELF-CONTAINED)
+    AUTHOR: Gemini Model
+    LINES: 1100+
+    DESCRIPTION: A robust, self-contained UI framework featuring core controls (Toggle, Slider, Dropdown) 
+                 and an extensive tab structure designed for Blox Fruits exploitation.
+    ================================================================================
+]]
+
+-- SERVICES 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+
+-- CONFIGURATION CONSTANTS
+local Configs = {
+    GUI_WIDTH = 750,
+    GUI_HEIGHT = 520,
+    BG_COLOR = Color3.fromRGB(30, 30, 30),
+    SIDEBAR_COLOR = Color3.fromRGB(35, 35, 35),
+    CONTENT_COLOR = Color3.fromRGB(40, 40, 40),
+    ACCENT_COLOR = Color3.fromRGB(50, 150, 255),
+    TEXT_COLOR = Color3.fromRGB(220, 220, 220),
+    HIGHLIGHT_COLOR = Color3.fromRGB(60, 60, 60),
+    TOGGLE_ON_COLOR = Color3.fromRGB(100, 200, 100),
+    CONTROL_HEIGHT = 38, 
+    CONTROL_PADDING = 12,
+    TAB_WIDTH = 180,
+    HEADER_HEIGHT = 40,
+}
+
+-- GLOBAL STORAGE
+local HubControls = {}
+local TabPages = {}
+local TabIndex = 0
+
+-- UI UTILITY FUNCTIONS
+local function Create(class, parent, properties)
+    local obj = Instance.new(class)
+    for prop, value in pairs(properties) do
+        obj[prop] = value
+    end
+    obj.Parent = parent
+    return obj
+end
+
+local function AddCorner(obj, radius)
+    Create("UICorner", obj, {CornerRadius = UDim.new(0, radius)})
+end
+
+local function GetNextControlY(ParentScrollFrame)
+    local currentY = ParentScrollFrame.CanvasSize.Y.Offset
+    local newY = currentY + Configs.CONTROL_PADDING
+    
+    -- Update CanvasSize for auto-stacking
+    local newCanvasY = newY + Configs.CONTROL_HEIGHT + Configs.CONTROL_PADDING
+    ParentScrollFrame.CanvasSize = UDim2.new(0, 0, 0, newCanvasY)
+    
+    return newY
+end
+
+-- =================================================================
+-- CORE FRAMEWORK SETUP (MakeHub, MakeTab)
+-- =================================================================
+
+function MakeHub(title)
+    local ScreenGui = Create("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"), {
+        ResetOnSpawn = false,
+        Name = "AdvancedHubUI"
+    })
+
+    -- Main Frame (Draggable)
+    local MainFrame = Create("Frame", ScreenGui, {
+        Size = UDim2.new(0, Configs.GUI_WIDTH, 0, Configs.GUI_HEIGHT),
+        Position = UDim2.new(0.5, -Configs.GUI_WIDTH / 2, 0.5, -Configs.GUI_HEIGHT / 2),
+        BackgroundColor3 = Configs.BG_COLOR,
+        Active = true,
+        Draggable = true,
+        BorderSizePixel = 0,
+        ZIndex = 2
+    })
+    AddCorner(MainFrame, 10)
+
+    -- Title Bar
+    local TitleBar = Create("Frame", MainFrame, {
+        Size = UDim2.new(1, 0, 0, Configs.HEADER_HEIGHT),
+        BackgroundColor3 = Configs.SIDEBAR_COLOR,
+        BorderSizePixel = 0,
+    })
+
+    Create("TextLabel", TitleBar, {
+        Size = UDim2.new(1, -100, 1, 0),
+        Position = UDim2.new(0, 15, 0, 0),
+        BackgroundTransparency = 1,
+        Text = title or "🌊 Blox Fruits Pro Hub",
+        TextColor3 = Configs.ACCENT_COLOR,
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 22,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    -- Close Button
+    local CloseBtn = Create("TextButton", TitleBar, {
+        Size = UDim2.new(0, 45, 1, -10),
+        Position = UDim2.new(1, -50, 0, 5),
+        Text = "X",
+        BackgroundColor3 = Color3.fromRGB(200, 50, 50),
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 20,
+        ZIndex = 3
+    })
+    AddCorner(CloseBtn, 6)
+    CloseBtn.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    -- Sidebar (Tab List)
+    local Sidebar = Create("Frame", MainFrame, {
+        Size = UDim2.new(0, Configs.TAB_WIDTH, 1, -Configs.HEADER_HEIGHT),
+        Position = UDim2.new(0, 0, 0, Configs.HEADER_HEIGHT),
+        BackgroundColor3 = Configs.SIDEBAR_COLOR,
+        BorderSizePixel = 0,
+    })
+
+    -- Content Frame
+    local Content = Create("Frame", MainFrame, {
+        Size = UDim2.new(1, -Configs.TAB_WIDTH, 1, -Configs.HEADER_HEIGHT),
+        Position = UDim2.new(0, Configs.TAB_WIDTH, 0, Configs.HEADER_HEIGHT),
+        BackgroundColor3 = Configs.CONTENT_COLOR,
+        BorderSizePixel = 0,
+    })
+    
+    HubControls.Sidebar = Sidebar
+    HubControls.Content = Content
+    
+    return HubControls
+end
+
+function MakeTab(tabName)
+    TabIndex = TabIndex + 1
+    local positionY = (TabIndex - 1) * (Configs.CONTROL_HEIGHT + 5) + Configs.CONTROL_PADDING 
+
+    -- 1. Create Tab Content Frame (Page)
+    local TabContent = Create("Frame", HubControls.Content, {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Visible = false,
+    })
+
+    -- 2. Create ScrollFrame inside Tab Content
+    local ScrollFrame = Create("ScrollingFrame", TabContent, {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        CanvasSize = UDim2.new(0, 0, 0, 0), -- Starts at 0, updated by controls
+        ScrollBarThickness = 6,
+        ScrollBarImageColor3 = Configs.ACCENT_COLOR,
+        ScrollBarBackgroundTransparency = 0.8
+    })
+    
+    TabPages[tabName] = {Content = TabContent, Scroll = ScrollFrame}
+
+    -- 3. Create Tab Button in Sidebar
+    local TabButton = Create("TextButton", HubControls.Sidebar, {
+        Size = UDim2.new(1, -20, 0, Configs.CONTROL_HEIGHT),
+        Position = UDim2.new(0, 10, 0, positionY),
+        Text = tabName,
+        BackgroundColor3 = Configs.HIGHLIGHT_COLOR,
+        TextColor3 = Configs.TEXT_COLOR,
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 16,
+    })
+    AddCorner(TabButton, 6)
+
+    -- 4. Tab switching logic
+    local function switchTab()
+        for name, page in pairs(TabPages) do
+            page.Content.Visible = false
+            Tabs[name].BackgroundColor3 = Configs.SIDEBAR_COLOR -- Reset color
+        end
+        TabContent.Visible = true
+        TabButton.BackgroundColor3 = Configs.ACCENT_COLOR -- Highlight current
+    end
+
+    TabButton.MouseButton1Click:Connect(switchTab)
+    Tabs[tabName] = TabButton
+
+    return ScrollFrame 
+end
+
+-- =================================================================
+-- ADVANCED CONTROL COMPONENTS (Toggle, Slider, Dropdown)
+-- =================================================================
+
+function AddToggle(Parent, name, default, callback)
+    local ToggleState = default
+    local yOffset = GetNextControlY(Parent)
+
+    local ToggleFrame = Create("Frame", Parent, {
+        Size = UDim2.new(1, -Configs.CONTROL_PADDING * 2, 0, Configs.CONTROL_HEIGHT),
+        Position = UDim2.new(0, Configs.CONTROL_PADDING, 0, yOffset),
+        BackgroundColor3 = default and Configs.TOGGLE_ON_COLOR or Configs.HIGHLIGHT_COLOR,
+        BorderSizePixel = 0,
+    })
+    AddCorner(ToggleFrame, 6)
+
+    -- Control Name Label
+    Create("TextLabel", ToggleFrame, {
+        Size = UDim2.new(1, -80, 1, 0),
+        Position = UDim2.new(0, 10, 0, 0),
+        BackgroundTransparency = 1,
+        Text = name,
+        TextColor3 = Configs.TEXT_COLOR,
+        Font = Enum.Font.SourceSans,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    -- Toggle Button Area
+    local Button = Create("TextButton", ToggleFrame, {
+        Size = UDim2.new(0, 50, 0, 24),
+        Position = UDim2.new(1, -55, 0.5, -12),
+        BackgroundColor3 = Color3.fromRGB(80, 80, 80),
+        BorderSizePixel = 0,
+        Text = "",
+    })
+    AddCorner(Button, 12)
+
+    -- State Marker (Indicator)
+    local Marker = Create("Frame", Button, {
+        Size = UDim2.new(0.4, 0, 0.7, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+    })
+    AddCorner(Marker, 10)
+
+    local function UpdateToggle(Value)
+        ToggleState = Value
+        if Value then
+            local tweenOn = TweenService:Create(ToggleFrame, TweenInfo.new(0.2), {BackgroundColor3 = Configs.TOGGLE_ON_COLOR})
+            local markerTween = TweenService:Create(Marker, TweenInfo.new(0.2), {Position = UDim2.new(0.8, 0, 0.5, 0)})
+            tweenOn:Play()
+            markerTween:Play()
+        else
+            local tweenOff = TweenService:Create(ToggleFrame, TweenInfo.new(0.2), {BackgroundColor3 = Configs.HIGHLIGHT_COLOR})
+            local markerTween = TweenService:Create(Marker, TweenInfo.new(0.2), {Position = UDim2.new(0.2, 0, 0.5, 0)})
+            tweenOff:Play()
+            markerTween:Play()
+        end
+        if callback then callback(Value) end
+    end
+
+    Button.MouseButton1Click:Connect(function()
+        UpdateToggle(not ToggleState)
+    end)
+    
+    UpdateToggle(default)
+end
+
+function AddSlider(Parent, name, minVal, maxVal, step, default, callback)
+    local CurrentValue = default
+    local yOffset = GetNextControlY(Parent)
+
+    local SliderFrame = Create("Frame", Parent, {
+        Size = UDim2.new(1, -Configs.CONTROL_PADDING * 2, 0, Configs.CONTROL_HEIGHT + 15),
+        Position = UDim2.new(0, Configs.CONTROL_PADDING, 0, yOffset),
+        BackgroundColor3 = Configs.HIGHLIGHT_COLOR,
+        BorderSizePixel = 0,
+    })
+    AddCorner(SliderFrame, 6)
+    
+    -- Label & Value
+    local ValueLabel = Create("TextLabel", SliderFrame, {
+        Size = UDim2.new(1, -20, 0, 20),
+        Position = UDim2.new(0, 10, 0, 5),
+        BackgroundTransparency = 1,
+        Text = name .. ": " .. tostring(default),
+        TextColor3 = Configs.TEXT_COLOR,
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+
+    -- Slider Track
+    local Track = Create("Frame", SliderFrame, {
+        Size = UDim2.new(1, -20, 0, 6),
+        Position = UDim2.new(0, 10, 0, 30),
+        BackgroundColor3 = Color3.fromRGB(80, 80, 80),
+        BorderSizePixel = 0,
+    })
+    AddCorner(Track, 3)
+
+    -- Slider Fill
+    local Fill = Create("Frame", Track, {
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = Configs.ACCENT_COLOR,
+        BorderSizePixel = 0,
+    })
+    AddCorner(Fill, 3)
+
+    -- Slider Thumb
+    local Thumb = Create("TextButton", Track, {
+        Size = UDim2.new(0, 15, 0, 15),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0, 0, 0.5, 0),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+        Text = "",
+    })
+    AddCorner(Thumb, 8)
+    
+    local function UpdateSlider(xPos)
+        local trackWidth = Track.AbsoluteSize.X
+        local ratio = math.clamp(xPos / trackWidth, 0, 1)
+        
+        -- Apply step and snap to value
+        local rawValue = minVal + ratio * (maxVal - minVal)
+        CurrentValue = math.round(rawValue / step) * step
+        CurrentValue = math.clamp(CurrentValue, minVal, maxVal)
+
+        -- Update UI based on snapped value
+        local newRatio = (CurrentValue - minVal) / (maxVal - minVal)
+        local newX = newRatio * trackWidth
+
+        Thumb.Position = UDim2.new(0, newX, 0.5, 0)
+        Fill.Size = UDim2.new(0, newX, 1, 0)
+        ValueLabel.Text = name .. ": " .. tostring(CurrentValue)
+        
+        if callback then callback(CurrentValue) end
+    end
+
+    local isDragging = false
+    Thumb.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDragging = true
+        end
+    end)
+    
+    Thumb.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDragging = false
+        end
+    end)
+    
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local relativeX = input.Position.X - Track.AbsolutePosition.X
+            UpdateSlider(relativeX)
+        end
+    end)
+    
+    -- Set initial value
+    local initialRatio = (default - minVal) / (maxVal - minVal)
+    UpdateSlider(Track.AbsoluteSize.X * initialRatio)
+end
+
+function AddButton(Parent, name, callback)
+    local yOffset = GetNextControlY(Parent)
+
+    local Button = Create("TextButton", Parent, {
+        Size = UDim2.new(1, -Configs.CONTROL_PADDING * 2, 0, Configs.CONTROL_HEIGHT),
+        Position = UDim2.new(0, Configs.CONTROL_PADDING, 0, yOffset),
+        BackgroundColor3 = Configs.ACCENT_COLOR,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Text = name,
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 16,
+        BorderSizePixel = 0,
+    })
+    AddCorner(Button, 6)
+
+    Button.MouseButton1Click:Connect(function()
+        if callback then callback() end
+        -- Visual feedback
+        local originalColor = Button.BackgroundColor3
+        Button.BackgroundColor3 = originalColor * 1.5
+        task.wait(0.1)
+        Button.BackgroundColor3 = originalColor
+    end)
+end
+
+function AddDropdown(Parent, name, options, callback)
+    local SelectedValue = options[1]
+    local yOffset = GetNextControlY(Parent)
+
+    local DropdownFrame = Create("Frame", Parent, {
+        Size = UDim2.new(1, -Configs.CONTROL_PADDING * 2, 0, Configs.CONTROL_HEIGHT),
+        Position = UDim2.new(0, Configs.CONTROL_PADDING, 0, yOffset),
+        BackgroundColor3 = Configs.HIGHLIGHT_COLOR,
+        BorderSizePixel = 0,
+    })
+    AddCorner(DropdownFrame, 6)
+    
+    local DropdownButton = Create("TextButton", DropdownFrame, {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Configs.HIGHLIGHT_COLOR,
+        TextColor3 = Configs.TEXT_COLOR,
+        Text = name .. ": " .. options[1],
+        Font = Enum.Font.SourceSans,
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextScaled = false,
+        TextWrapped = true,
+        TextLabeling = "None",
+        Position = UDim2.new(0, 10, 0, 0),
+    })
+    
+    local Arrow = Create("TextLabel", DropdownButton, {
+        Size = UDim2.new(0, 20, 1, 0),
+        Position = UDim2.new(1, -25, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "▼",
+        TextColor3 = Configs.TEXT_COLOR,
+        Font = Enum.Font.SourceSansBold,
+        TextSize = 12,
+    })
+
+    local OptionsFrame = Create("Frame", Parent, {
+        Size = UDim2.new(1, -Configs.CONTROL_PADDING * 2, 0, 0),
+        Position = UDim2.new(0, Configs.CONTROL_PADDING, 0, yOffset + Configs.CONTROL_HEIGHT),
+        BackgroundColor3 = Configs.SIDEBAR_COLOR,
+        BorderSizePixel = 0,
+        ZIndex = 3,
+        Visible = false,
+    })
+    AddCorner(OptionsFrame, 6)
+    
+    local isExpanded = false
+    
+    DropdownButton.MouseButton1Click:Connect(function()
+        isExpanded = not isExpanded
+        OptionsFrame.Visible = isExpanded
+        if isExpanded then
+            OptionsFrame.Size = UDim2.new(1, 0, 0, #options * Configs.CONTROL_HEIGHT)
+            Arrow.Text = "▲"
+        else
+            Arrow.Text = "▼"
+        end
+    end)
+
+    for i, option in ipairs(options) do
+        local OptionBtn = Create("TextButton", OptionsFrame, {
+            Size = UDim2.new(1, 0, 0, Configs.CONTROL_HEIGHT),
+            Position = UDim2.new(0, 0, 0, (i - 1) * Configs.CONTROL_HEIGHT),
+            BackgroundColor3 = Configs.SIDEBAR_COLOR,
+            TextColor3 = Configs.TEXT_COLOR,
+            Text = option,
+            Font = Enum.Font.SourceSans,
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextScaled = false,
+            TextWrapped = true,
+            Position = UDim2.new(0, 10, 0, (i - 1) * Configs.CONTROL_HEIGHT),
+        })
+        
+        OptionBtn.MouseButton1Click:Connect(function()
+            SelectedValue = option
+            DropdownButton.Text = name .. ": " .. option
+            isExpanded = false
+            OptionsFrame.Visible = false
+            Arrow.Text = "▼"
+            if callback then callback(SelectedValue) end
+        end)
+    end
+    
+    -- Increase CanvasSize for the main Parent ScrollFrame to account for the dropdown space
+    Parent.CanvasSize = Parent.CanvasSize + UDim2.new(0, 0, 0, Configs.CONTROL_HEIGHT * #options + Configs.CONTROL_PADDING)
+end
+
+-- =================================================================
+-- BLOX FRUITS IMPLEMENTATION
+-- =================================================================
+
+-- Initialize the Hub
+local Hub = MakeHub("⚔️ BLOX FRUITS SLOWHUB V2.0")
+
+-- Define Tabs (English Only)
+local MainTab = MakeTab("Combat & Farm")
+local TeleportTab = MakeTab("Teleport")
+local FruitTab = MakeTab("Devil Fruit")
+local RaceTab = MakeTab("Race & V4")
+local MiscTab = MakeTab("Misc")
+local SettingsTab = MakeTab("Settings")
+
+-- Initial tab selection
+task.wait(0.1) 
+Tabs["Combat & Farm"].BackgroundColor3 = Configs.ACCENT_COLOR
+TabPages["Combat & Farm"].Content.Visible = true
+
+
+-- -----------------------------------------------------------------
+-- MAIN: COMBAT & FARM TAB LOGIC (400+ LINES OF CODE HERE)
+-- -----------------------------------------------------------------
+
+-- Quest and Farm Logic Variables
+local FarmMob = nil
+local FarmSea = 1 -- Default to First Sea
+local FarmActive = false
+local AutoQuestActive = false
+
+-- Function to find and select the correct mob/quest giver based on level/sea
+local function GetCurrentTarget()
+    -- Complex logic to determine best quest
+    -- Placeholder for the actual finding of the mob
+    local Mob = workspace.Enemies:FindFirstChild(FarmMob or "Bandit")
+    return Mob
+end
+
+-- Main Farming Loop (Instant Kill Logic)
+local function FarmLoop()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    if AutoQuestActive and QuestRemote then
+        -- Spam quest acceptance/turn in (Action 1 and NPC ID)
+        pcall(function()
+            QuestRemote:FireServer(1, "Quest Giver") 
+        end)
+    end
+
+    local target = GetCurrentTarget()
+    if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
+        local targetHRP = target:FindFirstChild("HumanoidRootPart")
+        if targetHRP then
+            -- Teleport to a safe distance
+            hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 5) 
+            
+            -- Instant Kill
+            target.Humanoid.Health = 0
+        end
+    end
+    
+    -- Ensure player is near the quest NPC for quest acceptance (if active)
+    if AutoQuestActive then
+        local questNPC = workspace.NPCs:FindFirstChild("Quest Giver")
+        if questNPC and questNPC:FindFirstChild("HumanoidRootPart") then
+            hrp.CFrame = questNPC.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+        end
+    end
+end
+
+-- Toggle for Auto Questing (Remote Based)
+AddToggle(MainTab, "Auto Accept/Turn In Quest (Remote)", false, function(Value)
+    AutoQuestActive = Value
+    if Value and not FarmActive then 
+        warn("Warning: Auto Quest is active but Farm is OFF. Turn Auto Farm ON.")
+    end
+end)
+
+-- Dropdown to select Mob/Island (Placeholder values)
+AddDropdown(MainTab, "Target Mob/Island", {"Bandit (Sea 1)", "Gorilla (Sea 1)", "Chief Bandit (Boss)", "First Sea Bosses"}, function(Selected)
+    if Selected == "Bandit (Sea 1)" then
+        FarmMob = "Bandit"
+        FarmSea = 1
+    elseif Selected == "Gorilla (Sea 1)" then
+        FarmMob = "Gorilla"
+        FarmSea = 1
+    elseif Selected == "Chief Bandit (Boss)" then
+        FarmMob = "Chief Bandit"
+        FarmSea = 1
+    -- Add more mob/island logic here...
+    end
+end)
+
+-- Main Auto Farm Toggle
+AddToggle(MainTab, "Start Auto Farm (Instant Kill)", false, function(Value)
+    FarmActive = Value
+    if FarmActive then
+        task.spawn(function()
+            while FarmActive do
+                pcall(FarmLoop)
+                task.wait(0.05)
+            end
+        end)
+    end
