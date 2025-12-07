@@ -1,39 +1,39 @@
---// SlowHub UI - Optimized for Smooth Tab Handling
+-[span_0](start_span)-// SlowHub UI - Optimized for Smooth Tab Handling[span_0](end_span)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
-local VirtualUser = game:GetService("VirtualUser") -- Service dùng để giả lập click chuột
+[span_1](start_span)local VirtualUser = game:GetService("VirtualUser") -- Service dùng để giả lập click chuột[span_1](end_span)
 
 -- Các bảng lưu trữ để quản lý các đối tượng UI
-local Tabs = {} -- Lưu trữ các nút Tab (Sidebar Buttons)
-local ContentFrames = {} -- Lưu trữ các Khung Nội dung tương ứng
+[span_2](start_span)local Tabs = {} -- Lưu trữ các nút Tab (Sidebar Buttons)[span_2](end_span)
+[span_3](start_span)local ContentFrames = {} -- Lưu trữ các Khung Nội dung tương ứng[span_3](end_span)
 
 -- Gui Container
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Name = "SlowHubUI"
-ScreenGui.Enabled = true -- 🛠️ Đã Sửa: Đảm bảo GUI được bật
+[span_4](start_span)ScreenGui.Enabled = true -- 🛠️ Đã Sửa: Đảm bảo GUI được bật[span_4](end_span)
 
 -- Function thêm góc bo
 local function makeRound(obj, radius)
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius)
+    [span_5](start_span)corner.CornerRadius = UDim.new(0, radius)[span_5](end_span)
     corner.Parent = obj
 end
 
--[span_0](start_span)- Function Quản lý Tab (Tối ưu hóa việc chuyển đổi)[span_0](end_span)
+-[span_6](start_span)- Function Quản lý Tab (Tối ưu hóa việc chuyển đổi)[span_6](end_span)
 local function switchTab(tabName)
     -- Lặp qua tất cả các Khung Nội dung
     for name, frame in pairs(ContentFrames) do
-        [span_1](start_span)frame.Visible = (name == tabName) -- Chỉ hiện thị khung nội dung khớp với tabName[span_1](end_span)
+        [span_7](start_span)frame.Visible = (name == tabName) -- Chỉ hiện thị khung nội dung khớp với tabName[span_7](end_span)
     end
 
     -- Lặp qua tất cả các Nút Tab để thay đổi màu sắc
     for name, button in pairs(Tabs) do
-        [span_2](start_span)if name == tabName then[span_2](end_span)
-            [span_3](start_span)button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Màu làm nổi bật[span_3](end_span)
+        [span_8](start_span)if name == tabName then[span_8](end_span)
+            [span_9](start_span)button.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Màu làm nổi bật[span_9](end_span)
         else
-            [span_4](start_span)button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Màu nền mặc định[span_4](end_span)
+            [span_10](start_span)button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Màu nền mặc định[span_10](end_span)
         end
     end
 end
@@ -44,17 +44,17 @@ MainFrame.Parent = ScreenGui
 MainFrame.Size = UDim2.new(0, 700, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(244, 244, 244)
-[span_5](start_span)MainFrame.Active = true[span_5](end_span)
+[span_11](start_span)MainFrame.Active = true[span_11](end_span)
 MainFrame.Draggable = true
 MainFrame.BorderSizePixel = 0
 makeRound(MainFrame, 12)
 
 -- Title Bar
-local TitleBar = Instance.new("Frame", MainFrame)
+[span_12](start_span)local TitleBar = Instance.new("Frame", MainFrame)[span_12](end_span)
 TitleBar.Size = UDim2.new(1, 0, 0, 40)
-[span_6](start_span)TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)[span_6](end_span)
+[span_13](start_span)TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)[span_13](end_span)
 TitleBar.BorderSizePixel = 0
---makeRound(TitleBar, 10) -- 🛠️ Đã Sửa: Bỏ bo góc để tránh lỗi hiển thị
+-[span_14](start_span)-makeRound(TitleBar, 10) -- 🛠️ Đã Sửa: Bỏ bo góc để tránh lỗi hiển thị[span_14](end_span)
 
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(1, -100, 1, 0)
@@ -73,20 +73,20 @@ MinBtn.Position = UDim2.new(1, -95, 0, 5)
 MinBtn.Text = "–"
 MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MinBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-[span_7](start_span)MinBtn.Font = Enum.Font.SourceSansBold[span_7](end_span)
+[span_15](start_span)MinBtn.Font = Enum.Font.SourceSansBold[span_15](end_span)
 MinBtn.TextSize = 24
 makeRound(MinBtn, 8)
 
 -- Close Button
 local CloseBtn = Instance.new("TextButton", TitleBar)
-CloseBtn.Size = UDim2.new(0, 45, 1, -10)
+[span_16](start_span)CloseBtn.Size = UDim2.new(0, 45, 1, -10)[span_16](end_span)
 CloseBtn.Position = UDim2.new(1, -50, 0, 5)
 CloseBtn.Text = "X"
 CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CloseBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
 CloseBtn.Font = Enum.Font.SourceSansBold
 CloseBtn.TextSize = 24
-[span_8](start_span)makeRound(CloseBtn, 8)[span_8](end_span)
+[span_17](start_span)makeRound(CloseBtn, 8)[span_17](end_span)
 
 -- Sidebar
 local Sidebar = Instance.new("Frame", MainFrame)
@@ -105,14 +105,14 @@ ContentArea.BorderSizePixel = 0
 makeRound(ContentArea, 10)
 
 -- Function tạo Nút Tab
-[span_9](start_span)local function createTabButton(tabName, yOffset)[span_9](end_span)
+[span_18](start_span)local function createTabButton(tabName, yOffset)[span_18](end_span)
     local TabBtn = Instance.new("TextButton", Sidebar)
     TabBtn.Name = tabName
     TabBtn.Size = UDim2.new(1, -20, 0, 40)
-    TabBtn.Position = UDim2.new(0, 10, 0, yOffset)
+    [span_19](start_span)TabBtn.Position = UDim2.new(0, 10, 0, yOffset)[span_19](end_span)
     TabBtn.Text = tabName
     TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    [span_10](start_span)TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)[span_10](end_span)
+    [span_20](start_span)TabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)[span_20](end_span)
     TabBtn.Font = Enum.Font.SourceSansBold
     TabBtn.TextSize = 18
     makeRound(TabBtn, 8)
@@ -121,7 +121,7 @@ makeRound(ContentArea, 10)
         switchTab(tabName)
     end)
   
-    [span_11](start_span)Tabs[tabName] = TabBtn[span_11](end_span)
+    [span_21](start_span)Tabs[tabName] = TabBtn[span_21](end_span)
     return TabBtn
 end
 
@@ -129,11 +129,11 @@ end
 local function createContentFrame(tabName)
     local ContentFrame = Instance.new("Frame", ContentArea)
     ContentFrame.Name = tabName .. "Content"
-    ContentFrame.Size = UDim2.new(1, 0, 1, 0)
+    [span_22](start_span)ContentFrame.Size = UDim2.new(1, 0, 1, 0)[span_22](end_span)
     ContentFrame.BackgroundTransparency = 1
     ContentFrame.Visible = false
  
-    [span_12](start_span)ContentFrames[tabName] = ContentFrame[span_12](end_span)
+    [span_23](start_span)ContentFrames[tabName] = ContentFrame[span_23](end_span)
     return ContentFrame
 end
 
@@ -142,14 +142,14 @@ end
 ----------------------------------------------------
 
 -- 1. Tab Trang Chủ
-[span_13](start_span)local HomeBtn = createTabButton("Trang Chủ", 10)[span_13](end_span)
+[span_24](start_span)local HomeBtn = createTabButton("Trang Chủ", 10)[span_24](end_span)
 local HomeContent = createContentFrame("Trang Chủ")
 
 local HomeLabel = Instance.new("TextLabel", HomeContent)
 HomeLabel.Size = UDim2.new(1, 0, 0, 30)
 HomeLabel.Position = UDim2.new(0, 0, 0, 10)
 HomeLabel.Text = "Chào mừng đến với Blox Fruits Hub!"
-[span_14](start_span)HomeLabel.BackgroundTransparency = 1[span_14](end_span)
+[span_25](start_span)HomeLabel.BackgroundTransparency = 1[span_25](end_span)
 HomeLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 HomeLabel.Font = Enum.Font.SourceSans
 HomeLabel.TextSize = 20
@@ -170,7 +170,7 @@ FarmingLabel.TextSize = 24
 local AutoFarmToggle = Instance.new("TextButton", FarmingContent)
 AutoFarmToggle.Size = UDim2.new(0, 200, 0, 40)
 AutoFarmToggle.Position = UDim2.new(0, 20, 0, 60)
-[span_15](start_span)AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)"[span_15](end_span)
+[span_26](start_span)AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)"[span_26](end_span)
 AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
 AutoFarmToggle.TextColor3 = Color3.fromRGB(0, 0, 0)
 AutoFarmToggle.Font = Enum.Font.SourceSans
@@ -180,33 +180,70 @@ makeRound(AutoFarmToggle, 8)
 
 -- ====================================================
 --       CODE ĐÃ SỬA: Logic Auto Farm Bandit
--[span_16](start_span)- ====================================================[span_16](end_span)
+-[span_27](start_span)- ====================================================[span_27](end_span)
 
-local function farmLevelTask()
-    -- 1. Tìm quái vật "Bandit" trong thư mục Enemies hoặc Workspace
-    local target = workspace.Enemies:FindFirstChild("Bandit") or workspace:FindFirstChild("Bandit")
+-- 🛠️ Hàm tìm kiếm quái vật gần nhất (Cải tiến đáng tin cậy)
+local function findNearestTarget(name)
+    local nearestTarget = nil
+    local shortestDistance = math.huge
+    local character = LocalPlayer.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return nil end
+
+    local myHRP = character.HumanoidRootPart
+
+    -- Tìm kiếm trong Workspace và các thư mục con (ví dụ: Enemies)
+    -- Sử dụng GetChildren để tránh lặp qua mọi thứ (tối ưu hơn FindFirstChild/GetDescendants)
+    -- Trong Blox Fruits, quái thường nằm trong thư mục cụ thể hoặc Workspace
+    local searchAreas = {workspace.Enemies, workspace} 
+    
+    for _, area in ipairs(searchAreas) do
+        if area then
+            for _, obj in ipairs(area:GetChildren()) do
+                if obj.Name == name and obj:IsA("Model") then
+                    local humanoid = obj:FindFirstChild("Humanoid")
+                    local hrp = obj:FindFirstChild("HumanoidRootPart")
+                    
+                    if humanoid and humanoid.Health > 0 and hrp and hrp.Position then
+                        local distance = (myHRP.Position - hrp.Position).Magnitude
+                        if distance < shortestDistance and distance < 100 then -- Giới hạn tìm kiếm trong phạm vi 100
+                            shortestDistance = distance
+                            nearestTarget = obj
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nearestTarget
+end
+
+-- 🛠️ Hàm farm (Sử dụng tìm kiếm mục tiêu động)
+[span_28](start_span)local function farmLevelTask()[span_28](end_span)
+    local target = findNearestTarget("Bandit")
 
     -- 2. Kiểm tra điều kiện (Quái tồn tại, có máu)
     if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
+        local myCharacter = LocalPlayer.Character
+        local targetHRP = target:FindFirstChild("HumanoidRootPart")
         
-        -- 3. Teleport ra sau lưng quái (khoảng cách 5 đơn vị)
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and target:FindFirstChild("HumanoidRootPart") then
-       
-        [span_17](start_span)LocalPlayer.Character.HumanoidRootPart.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)[span_17](end_span)
+        -- 3. Teleport ra sau lưng quái (giúp tấn công gần hơn)
+        if myCharacter and myCharacter:FindFirstChild("HumanoidRootPart") and targetHRP and targetHRP.CFrame then
+            local myHRP = myCharacter.HumanoidRootPart
+            
+            -[span_29](start_span)- Teleport ra sau lưng quái (khoảng cách 5 đơn vị)[span_29](end_span)
+            -- Sử dụng CFrame.lookAt để nhân vật xoay về phía quái sau khi teleport
+            myHRP.CFrame = CFrame.lookAt(targetHRP.Position + targetHRP.CFrame.LookVector * -5, targetHRP.Position)
         end
 
-        -- 4. Tự động đánh (Giả lập click chuột trái)
-        -- Sử dụng VirtualUser để click chuột thật
+        -[span_30](start_span)- 4. Tự động đánh (Giả lập click chuột trái)[span_30](end_span)
         VirtualUser:CaptureController()
         VirtualUser:ClickButton1(Vector2.new(851, 158), workspace.CurrentCamera.CFrame)
         
         -- Debug: In ra để biết đang đánh
-        
-    -[span_18](start_span)- print("Đang đánh Bandit...")[span_18](end_span)
+        [span_31](start_span)print("Đang đánh Bandit...")[span_31](end_span)
     end
     
-    -- Chờ rất ngắn để đánh liên tục
-    wait(0.1) 
+    -- Không cần wait(0.1) ở đây nữa vì vòng lặp chính đã sử dụng Heartbeat
 end
 
 local isFarming = false
@@ -220,19 +257,19 @@ AutoFarmToggle.MouseButton1Click:Connect(function()
         AutoFarmToggle.Text = "🟢 Auto Farm Bandit (BẬT)"
         AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(144, 238, 144) -- Xanh lá
         
-        -[span_19](start_span)- CHẠY LOGIC FARM[span_19](end_span)
-        [span_20](start_span)farmThread = coroutine.wrap(function()[span_20](end_span)
+        -[span_32](start_span)- CHẠY LOGIC FARM[span_32](end_span)
+        [span_33](start_span)farmThread = coroutine.wrap(function()[span_33](end_span)
             while isFarming do
                 pcall(farmLevelTask) 
-                RunService.Heartbeat:Wait() -- Tối ưu hóa vòng lặp
+                [span_34](start_span)RunService.Heartbeat:Wait() -- Tối ưu hóa vòng lặp[span_34](end_span)
             end
             farmThread = nil 
-       
-        [span_21](start_span)end)()[span_21](end_span)
+        
+        [span_35](start_span)end)()[span_35](end_span)
         
     else
         AutoFarmToggle.Text = "⚫ Auto Farm Bandit (TẮT)"
-        [span_22](start_span)AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220) -- Xám[span_22](end_span)
+        [span_36](start_span)AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(220, 220, 220) -- Xám[span_36](end_span)
         -- Khi isFarming = false, vòng lặp while tự dừng
     end
 end)
@@ -244,10 +281,10 @@ end)
 
 -- Popup Confirm
 local Confirm = Instance.new("Frame", ScreenGui)
-Confirm.Size = UDim2.new(0, 300, 0, 150)
+[span_37](start_span)Confirm.Size = UDim2.new(0, 300, 0, 150)[span_37](end_span)
 Confirm.Position = UDim2.new(0.5, -150, 0.5, -75)
 Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-[span_23](start_span)Confirm.BorderSizePixel = 1[span_23](end_span)
+[span_38](start_span)Confirm.BorderSizePixel = 1[span_38](end_span)
 Confirm.Visible = false
 makeRound(Confirm, 10)
 
@@ -255,7 +292,7 @@ local ConfirmText = Instance.new("TextLabel", Confirm)
 ConfirmText.Size = UDim2.new(1, 0, 0.5, 0)
 ConfirmText.BackgroundTransparency = 1
 ConfirmText.Text = "Bạn có muốn thoát Blox Fruits Hub?"
-ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)
+[span_39](start_span)ConfirmText.TextColor3 = Color3.fromRGB(0, 0, 0)[span_39](end_span)
 ConfirmText.Font = Enum.Font.SourceSansBold
 ConfirmText.TextSize = 18
 
@@ -287,7 +324,7 @@ MinBtn.MouseButton1Click:Connect(function()
     if minimized then
         oldSize = MainFrame.Size
    
-        [span_24](start_span)MainFrame.Size = UDim2.new(0, 700, 0, 40) -- Kích thước thu nhỏ[span_24](end_span)
+        [span_40](start_span)MainFrame.Size = UDim2.new(0, 700, 0, 40) -- Kích thước thu nhỏ[span_40](end_span)
         Sidebar.Visible = false
         ContentArea.Visible = false
     else
@@ -311,4 +348,4 @@ NoBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Hiển thị Tab mặc định
-[span_25](start_span)switchTab("FARMING")[span_25](end_span)
+[span_41](start_span)switchTab("FARMING")[span_41](end_span)
