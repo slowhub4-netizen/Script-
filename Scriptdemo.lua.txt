@@ -1,0 +1,212 @@
+-- Grok FTAP Hub Custom by Tao - Siêu Dễ Sài 2025 | No Key | Delta Safe
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+local mouse = player:GetMouse()
+
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local FlingBtn = Instance.new("TextButton")
+local FlyBtn = Instance.new("TextButton")
+local SpeedBtn = Instance.new("TextButton")
+local CloseBtn = Instance.new("TextButton")
+
+-- Variables
+local fling_on = false
+local fly_on = false
+local speed_on = false
+local strength = 8500
+local flying_bg, flying_bv
+local noclip_loop
+
+-- GUI Setup
+ScreenGui.Name = "GrokFTAPHub"
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
+MainFrame.Size = UDim2.new(0, 350, 0, 250)
+MainFrame.Active = true
+MainFrame.Draggable = true  -- Kéo thả dễ dàng!
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim2.new(0, 12, 0, 12)
+corner.Parent = MainFrame
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "🚀 GROK FTAP ƯI HUB 🚀"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextScaled = true
+
+FlingBtn.Name = "FlingBtn"
+FlingBtn.Parent = MainFrame
+FlingBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+FlingBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
+FlingBtn.Size = UDim2.new(0.9, 0, 0.22, 0)
+FlingBtn.Font = Enum.Font.GothamBold
+FlingBtn.Text = "Ném Siêu Xa: OFF"
+FlingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlingBtn.TextScaled = true
+local fcorner = Instance.new("UICorner")
+fcorner.CornerRadius = UDim2.new(0, 8, 0, 8)
+fcorner.Parent = FlingBtn
+
+FlyBtn.Name = "FlyBtn"
+FlyBtn.Parent = MainFrame
+FlyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+FlyBtn.Position = UDim2.new(0.05, 0, 0.52, 0)
+FlyBtn.Size = UDim2.new(0.9, 0, 0.22, 0)
+FlyBtn.Font = Enum.Font.GothamBold
+FlyBtn.Text = "Bay Lượn: OFF"
+FlyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyBtn.TextScaled = true
+local ycorner = Instance.new("UICorner")
+ycorner.CornerRadius = UDim2.new(0, 8, 0, 8)
+ycorner.Parent = FlyBtn
+
+SpeedBtn.Name = "SpeedBtn"
+SpeedBtn.Parent = MainFrame
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+SpeedBtn.Position = UDim2.new(0.05, 0, 0.79, 0)
+SpeedBtn.Size = UDim2.new(0.9, 0, 0.18, 0)
+SpeedBtn.Font = Enum.Font.GothamBold
+SpeedBtn.Text = "Chạy Siêu Tốc: OFF"
+SpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedBtn.TextScaled = true
+local scorerner = Instance.new("UICorner")
+scorner.CornerRadius = UDim2.new(0, 8, 0, 8)
+scorner.Parent = SpeedBtn
+
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Parent = MainFrame
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+CloseBtn.Position = UDim2.new(1, -40, 0, 5)
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextScaled = true
+local clcorner = Instance.new("UICorner")
+clcorner.CornerRadius = UDim2.new(0.5, 0, 0.5, 0)
+clcorner.Parent = CloseBtn
+
+-- Functions
+local function tween(btn, color, text)
+    TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = color}):Play()
+    btn.Text = text
+end
+
+-- Fling Toggle
+FlingBtn.MouseButton1Click:Connect(function()
+    fling_on = not fling_on
+    if fling_on then
+        tween(FlingBtn, Color3.fromRGB(0, 255, 0), "Ném Siêu Xa: ON 🔥")
+    else
+        tween(FlingBtn, Color3.fromRGB(255, 0, 0), "Ném Siêu Xa: OFF")
+    end
+end)
+
+-- Grab Fling Logic (Siêu khủng!)
+Workspace.ChildAdded:Connect(function(model)
+    if model.Name == "GrabParts" and fling_on then
+        local weld = model:FindFirstChild("GrabPart"):FindFirstChild("WeldConstraint")
+        if weld then
+            local part = weld.Part1
+            local bv = Instance.new("BodyVelocity")
+            bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+            bv.Parent = part
+            model:GetPropertyChangedSignal("Parent"):Connect(function()
+                if not model.Parent then
+                    bv.Velocity = camera.CFrame.LookVector * strength + Vector3.new(math.random(-100,100), math.random(200,500), math.random(-100,100))
+                    Debris:AddItem(bv, 1)
+                end
+            end)
+        end
+    end
+end)
+
+-- Fly Toggle
+local function startFly()
+    local char = player.Character
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChild("Humanoid")
+        if root and hum then
+            hum.PlatformStand = true
+            flying_bg = Instance.new("BodyGyro", root)
+            flying_bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            flying_bv = Instance.new("BodyVelocity", root)
+            flying_bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+            flying_bv.Velocity = Vector3.new(0, 0.1, 0)
+            spawn(function()
+                while fly_on and root.Parent do
+                    flying_bg.CFrame = camera.CFrame
+                    flying_bv.Velocity = Vector3.new(0, 0, 0)
+                    wait()
+                end
+            end)
+        end
+    end
+end
+
+FlyBtn.MouseButton1Click:Connect(function()
+    fly_on = not fly_on
+    if fly_on then
+        tween(FlyBtn, Color3.fromRGB(0, 200, 255), "Bay Lượn: ON 🛩️")
+        startFly()
+    else
+        tween(FlyBtn, Color3.fromRGB(255, 0, 0), "Bay Lượn: OFF")
+        if flying_bg then flying_bg:Destroy() end
+        if flying_bv then flying_bv:Destroy() end
+        local char = player.Character
+        if char then char.Humanoid.PlatformStand = false end
+    end
+end)
+
+-- Speed Toggle
+SpeedBtn.MouseButton1Click:Connect(function()
+    speed_on = not speed_on
+    local char = player.Character
+    if char then
+        local hum = char:FindFirstChild("Humanoid")
+        if hum then
+            hum.WalkSpeed = speed_on and 100 or 16
+        end
+    end
+    if speed_on then
+        tween(SpeedBtn, Color3.fromRGB(255, 255, 0), "Chạy Siêu Tốc: ON ⚡")
+    else
+        tween(SpeedBtn, Color3.fromRGB(255, 0, 0), "Chạy Siêu Tốc: OFF")
+    end
+end)
+
+-- Close
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Reconnect on respawn
+player.CharacterAdded:Connect(function()
+    if speed_on then
+        wait(3)
+        local hum = player.Character:WaitForChild("Humanoid")
+        hum.WalkSpeed = 100
+    end
+    if fly_on then startFly() end
+end)
+
+print("🌟 Grok FTAP Hub Loaded! Bấm nút ủi đi bro! 🔥")
